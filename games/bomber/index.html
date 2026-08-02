@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#12121c">
+<title>爆破小子 · 云想游戏厅</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="game" width="256" height="240"></canvas>
+
+  <!-- 触摸按钮:十字方向 + 放炸弹 -->
+  <div id="touch" class="touch-ui">
+    <div class="pad-left">
+      <div class="dpad">
+        <button class="tbtn dp-up"    data-key="up"><span>&#9650;</span></button>
+        <button class="tbtn dp-left"  data-key="left"><span>&#9664;</span></button>
+        <button class="tbtn dp-right" data-key="right"><span>&#9654;</span></button>
+        <button class="tbtn dp-down"  data-key="down"><span>&#9660;</span></button>
+      </div>
+    </div>
+    <div class="pad-right">
+      <button class="tbtn btn-bomb" data-key="fire"><span>&#128163; 炸</span></button>
+    </div>
+  </div>
+</div>
+
+<script src="../../js/audio.js"></script>
+<script src="../../js/input.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

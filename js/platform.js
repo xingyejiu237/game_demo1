@@ -13,8 +13,11 @@
       id: 'tank', title: '钢铁前线', subtitle: '坦克大战 · 轻量版',
       url: 'games/tank/index.html', status: 'play', icon: 'tank'
     },
-    { id: 'soon1', title: '敬请期待', subtitle: '新卡带制作中…', status: 'soon' },
-    { id: 'soon2', title: '敬请期待', subtitle: '新卡带制作中…', status: 'soon' }
+    {
+      id: 'bomber', title: '爆破小子', subtitle: '炸弹迷宫 · 连锁引爆',
+      url: 'games/bomber/index.html', status: 'play', icon: 'bomber'
+    },
+    { id: 'soon1', title: '敬请期待', subtitle: '新卡带制作中…', status: 'soon' }
   ];
 
   // ---------- 像素图标(纯代码绘制,原创) ----------
@@ -41,6 +44,29 @@
       [3,12,7],[4,12,7],[5,12,7],[6,12,7],[7,12,7],[8,12,7],[9,12,7],[10,12,7],[11,12,7]
     ];
     var COL = ['#000', '#e40000', '#f8b880', '#2838f8', '#000000', '#ffffff', '#2838f8', '#4a2a12'];
+    c.fillStyle = 'rgba(255,255,255,0.06)';
+    c.fillRect(0, 0, 16 * s, 16 * s);
+    for (var i = 0; i < px.length; i++) {
+      c.fillStyle = COL[px[i][2]];
+      c.fillRect(x0 + px[i][0] * s, y0 + px[i][1] * s, s, s);
+    }
+  }
+
+  // 炸弹:黑色圆弹+引信(16x16 放大)
+  function drawBombIcon(c) {
+    var s = 3, x0 = 2, y0 = 2;
+    var px = [
+      [7,0,1],[8,0,1],
+      [6,1,2],[7,1,2],[8,1,2],[9,1,2],
+      [5,2,2],[6,2,2],[7,2,3],[8,2,3],[9,2,2],[10,2,2],
+      [4,3,3],[5,3,3],[6,3,3],[7,3,3],[8,3,3],[9,3,3],[10,3,3],[11,3,3],
+      [4,4,3],[5,4,3],[6,4,3],[7,4,3],[8,4,3],[9,4,3],[10,4,3],[11,4,3],
+      [4,5,3],[5,5,3],[6,5,3],[7,5,3],[8,5,3],[9,5,3],[10,5,3],[11,5,3],
+      [5,6,3],[6,6,3],[7,6,3],[8,6,3],[9,6,3],[10,6,3],
+      [6,7,3],[7,7,3],[8,7,3],[9,7,3],
+      [7,8,4],[8,8,4]
+    ];
+    var COL = ['#000', '#f8d020', '#f8f8f8', '#1a1a1a', '#e83010'];
     c.fillStyle = 'rgba(255,255,255,0.06)';
     c.fillRect(0, 0, 16 * s, 16 * s);
     for (var i = 0; i < px.length; i++) {
@@ -92,6 +118,7 @@
         cv.width = 64; cv.height = 64;
         if (g.icon === 'mario') drawMarioIcon(cv.getContext('2d'));
         if (g.icon === 'tank') drawTankIcon(cv.getContext('2d'));
+        if (g.icon === 'bomber') drawBombIcon(cv.getContext('2d'));
         art.appendChild(cv);
       } else {
         var q = document.createElement('span');
