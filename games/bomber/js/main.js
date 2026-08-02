@@ -1,4 +1,4 @@
-// main.js(爆破小子)— 炸弹人换皮:放炸弹炸软砖/敌人,注意别炸到自己
+// main.js(爆破小子)— 放炸弹炸软砖/敌人,注意别炸到自己
 (function (global) {
   'use strict';
 
@@ -90,20 +90,25 @@
     if (cx < 0 || cy < 0 || cx >= GRID || cy >= GRID) return 'X';
     return map[cy][cx];
   }
-  function solidCell(cx, cy) {
-    var t = tileAt(cx, cy);
-    if (t === 'X' || t === 'B') return true;
-    // 炸弹占位
+  function bombAt(cx, cy) {
     for (var i = 0; i < bombs.length; i++) {
-      if (bombs[i].cx === cx && bombs[i].cy === cy) return true;
+      if (bombs[i].cx === cx && bombs[i].cy === cy) return bombs[i];
     }
-    return false;
+    return null;
   }
-  // 12x12 矩形能否站(像素坐标)
-  function canStand(x, y) {
+  // 12x12 矩形能否站(像素坐标);who 与炸弹格重叠时允许离开(经典规则)
+  function canStand(x, y, who) {
     for (var cy = 0; cy < 12; cy += 11) {
       for (var cx = 0; cx < 12; cx += 11) {
-        if (solidCell((x + cx) >> 4, (y + cy) >> 4)) return false;
+        var col = (x + cx) >> 4, row = (y + cy) >> 4;
+        var t = tileAt(col, row);
+        if (t === 'X' || t === 'B') return false;
+        var b = bombAt(col, row);
+        if (b) {
+          if (who && who.x < col * 16 + 16 && who.x + 12 > col * 16 &&
+              who.y < row * 16 + 16 && who.y + 12 > row * 16) continue;   // 正踩在炸弹上:放行
+          return false;
+        }
       }
     }
     return true;
@@ -151,9 +156,9 @@
     else if (inp.dir > 0) { dx = 1; player.dir = 1; }
     if (dx !== 0 || dy !== 0) {
       var nx = player.x + dx * player.speed, ny = player.y + dy * player.speed;
-      // 轴分离移动
-      if (canStand(nx, player.y)) player.x = nx;
-      if (canStand(player.x, ny)) player.y = ny;
+      // 轴分离移动(刚放的炸弹允许离开)
+      if (canStand(nx, player.y, player)) player.x = nx;
+      if (canStand(player.x, ny, player)) player.y = ny;
     }
     // 放炸弹
     if (inp.fire && !player.firePrev) placeBomb();
@@ -282,8 +287,21 @@
       }
       var dx = [0, 1, 0, -1][e.dir], dy = [-1, 0, 1, 0][e.dir];
       var nx = e.x + dx * e.speed, ny = e.y + dy * e.speed;
-      if (canStand(nx, e.y) && canStand(e.x, ny)) { e.x = nx; e.y = ny; }
+      if (canStand(nx, e.y, e) && canStand(e.x, ny, e)) { e.x = nx; e.y = ny; }
       else { e.dir = Math.floor(Math.random() * 4); }
+      // 敌人也会放炸弹(每隔几秒有概率,最多同时 3 枚)
+      e.bombT = (e.bombT || 2) - dt;
+      if (e.bombT <= 0) {
+        e.bombT = 2.5 + Math.random() * 2;
+        if (Math.random() < 0.45) {
+          var bx = (e.x + 6) >> 4, by = (e.y + 6) >> 4;
+          var cnt = 0;
+          for (var bi = 0; bi < bombs.length; bi++) if (bombs[bi].owner === 'enemy') cnt++;
+          if (cnt < 3 && !bombAt(bx, by)) {
+            bombs.push({ cx: bx, cy: by, t: BOMB_TICKS, range: 1 + Math.floor(Math.random() * 2), owner: 'enemy' });
+          }
+        }
+      }
       // 撞到玩家
       if (player.alive && player.inv <= 0 &&
           player.x < e.x + 12 && player.x + 12 > e.x &&
@@ -392,7 +410,7 @@
     ctx.fillText('爆破小子', 52, 100);
     ctx.fillStyle = '#ffd23c';
     ctx.font = 'bold 14px monospace';
-    ctx.fillText('BLAST BOY · 炸弹人换皮', 40, 130);
+    ctx.fillText('BLAST BOY · 引爆全场', 48, 130);
     ctx.fillStyle = '#fff';
     ctx.font = '12px monospace';
     ctx.fillText('炸掉软砖与敌人,小心别炸到自己', 36, 156);

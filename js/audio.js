@@ -84,7 +84,7 @@
     kick:    function () { tone(220, 0.1, 'square', 0.16, 0, 90); },
     start:   function () { tone(523, 0.12, 'square', 0.15); tone(784, 0.2, 'square', 0.15, ctx().currentTime + 0.11); },
     pause:   function () { tone(392, 0.1, 'square', 0.12); tone(392, 0.1, 'square', 0.12, ctx().currentTime + 0.15); },
-    // ---- 通用(坦克大战等共用) ----
+    // ---- 通用(多游戏共用) ----
     shot:    function () { tone(880, 0.05, 'square', 0.1, 0, 240); },
     place:   function () { tone(320, 0.12, 'square', 0.15, 0, 120); },
     explode: function () { noise(0.3, 0.35); tone(120, 0.25, 'square', 0.18, 0, 40); },

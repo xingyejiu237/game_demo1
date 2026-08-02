@@ -1,4 +1,4 @@
-// sprites.js(坦克大战)— 原创像素画:坦克/地形/基地/爆炸
+// sprites.js(钢铁前线)— 原创像素画:坦克/地形/基地/爆炸
 (function (global) {
   'use strict';
 

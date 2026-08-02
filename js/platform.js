@@ -10,7 +10,7 @@
       url: 'games/mario/index.html', status: 'play', icon: 'mario'
     },
     {
-      id: 'tank', title: '钢铁前线', subtitle: '坦克大战 · 轻量版',
+      id: 'tank', title: '钢铁前线', subtitle: '装甲对决 · 守卫基地',
       url: 'games/tank/index.html', status: 'play', icon: 'tank'
     },
     {

@@ -1,4 +1,4 @@
-// tank-smoke.js — 钢铁前线(坦克大战轻量版)冒烟测试
+// tank-smoke.js — 钢铁前线(钢铁前线)冒烟测试
 'use strict';
 
 function makeCtx() {
@@ -53,7 +53,7 @@ function reset() {
   act.anyKey = false;
 }
 
-console.log('[T] 坦克大战冒烟测试');
+console.log('[T] 钢铁前线冒烟测试');
 reset();
 check('进入 PLAY', TG._state() === 'PLAY');
 

@@ -8,7 +8,7 @@
     jump: false,     // 跳跃键按住
     run:  false,     // 加速键按住
     jumpTap: false,  // 本帧“刚刚按下跳跃”的边沿触发
-    up: false,       // 上(坦克大战等)
+    up: false,       // 上(四向移动游戏等)
     down: false,     // 下
     fire: false,     // 射击按住
     anyKey: false    // 本帧有任意输入(用于标题/继续)

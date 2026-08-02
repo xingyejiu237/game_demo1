@@ -1,4 +1,4 @@
-// main.js(坦克大战·轻量版)— 钢铁前线:单机 1P 守卫基地
+// main.js— 钢铁前线:单机 1P 守卫基地
 (function (global) {
   'use strict';
 
@@ -410,7 +410,7 @@
     ctx.fillText('钢铁前线', 52, 100);
     ctx.fillStyle = '#7ab8ff';
     ctx.font = 'bold 14px monospace';
-    ctx.fillText('STEEL FRONT · 坦克大战轻量版', 28, 130);
+    ctx.fillText('STEEL FRONT · 装甲对决', 52, 130);
     ctx.fillStyle = '#fff';
     ctx.font = '12px monospace';
     ctx.fillText('守住基地,消灭全部敌人', 56, 156);
