@@ -74,8 +74,11 @@ act.dir = 0;
 check('放炸弹后可以移动', BG._player().x > px1);
 
 // 炸弹爆炸(移动消耗了 20 帧,剩余约 130 帧引爆),爆炸瞬间有火焰
+// 注:敌人也会放炸弹,这里只断言玩家自己的炸弹消失
 for (var i = 0; i < 140; i++) BG._step(1 / 60);
-check('炸弹爆炸消失', BG._bombs().length === 0);
+var playerBombLeft = 0;
+BG._bombs().forEach(function (bb) { if (bb.owner === 'player') playerBombLeft++; });
+check('玩家炸弹爆炸消失', playerBombLeft === 0);
 check('产生火焰', BG._flames().length > 0);
 // 等火焰熄灭,避免干扰后续
 for (var fw = 0; fw < 60; fw++) BG._step(1 / 60);
