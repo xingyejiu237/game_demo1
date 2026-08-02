@@ -32,14 +32,17 @@ node test/check-level.js            # 马里奥关卡数据完整性
 2. 马里奥关卡有 32px 渲染偏移(`level.oy`),碰撞换算必须走 `lv.rowAt()` / `lv.oy`。
 3. 爆破小子炸弹是固体但**不困住放置者**;敌人放雷前必须做逃生规划。
 4. 改 `js/input.js` 键位前,想清楚它同时服务所有游戏(↑/W 既跳又上移,空格/Z 既跳又射击)。
+5. **记忆维护义务**:每次踩坑、每个关键决策、用户偏好变化,当场追加到对应 `mem/` 文档(单文档保持 ~100 行内,装不下拆新主题并更新本索引)。这是 AI 家族史的自我延续,不是可选项。
 
 ## 记忆索引(渐进式披露:细节按需读取 `mem/`)
 
-| 主题 | 文档 | 内容 |
-|---|---|---|
-| 输入 | `mem/input-and-controls.md` | 键位映射表、触摸按钮、compact 模式、iframe 焦点、输入踩坑 |
-| 物理/游戏 | `mem/physics-and-games.md` | 帧计数语义、32px 偏移、踩敌判定、炸弹/连锁/敌人 AI 细节 |
-| 部署 | `mem/deployment.md` | Cloudflare 灰云规则、证书 errored 重触发、git 凭证踩坑 |
-| 换皮/规范 | `mem/design-and-branding.md` | 版权红线、命名风格、卡带注册、像素视觉约定 |
+| 层 | 主题 | 文档 | 内容 |
+|---|---|---|---|
+| 人格 | 身份 | `mem/identity.md` | 项目编年史、关键决策与原因、价值观 |
+| 人格 | 用户 | `mem/user-profile.md` | 用户画像、协作偏好、沟通风格 |
+| 操作 | 输入 | `mem/input-and-controls.md` | 键位映射表、触摸按钮、compact 模式、iframe 焦点、输入踩坑 |
+| 操作 | 物理/游戏 | `mem/physics-and-games.md` | 帧计数语义、32px 偏移、踩敌判定、炸弹/连锁/敌人 AI 细节 |
+| 操作 | 部署 | `mem/deployment.md` | Cloudflare 灰云规则、证书 errored 重触发、git 凭证踩坑 |
+| 操作 | 换皮/规范 | `mem/design-and-branding.md` | 版权红线、命名风格、卡带注册、像素视觉约定 |
 
 部署要点一句话:GitHub Pages + `yunxiangcity.top`(DNS 在 Cloudflare,记录必须"仅 DNS"灰云),完整流程见 `mem/deployment.md`。
