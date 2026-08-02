@@ -37,7 +37,10 @@
         case 'ArrowRight': case 'KeyD': key.right = true; break;
         case 'ArrowUp': case 'KeyW': case 'Space': case 'KeyZ':
           if (!key.jump) actions.jumpTap = true;
-          key.jump = true; break;
+          key.jump = true;
+          key.up = true;     // 坦克大战的上方向
+          key.fire = true;   // 空格/Z 也当射击(坦克)
+          break;
         case 'ArrowDown': case 'KeyS': key.down = true; break;
         case 'KeyJ': case 'Enter': key.fire = true; break;
         case 'ShiftLeft': case 'ShiftRight': case 'KeyX': key.accel = true; break;
@@ -54,7 +57,8 @@
       switch (e.code) {
         case 'ArrowLeft':  case 'KeyA': key.left = false; break;
         case 'ArrowRight': case 'KeyD': key.right = false; break;
-        case 'ArrowUp': case 'KeyW': case 'Space': case 'KeyZ': key.jump = false; break;
+        case 'ArrowUp': case 'KeyW': case 'Space': case 'KeyZ':
+          key.jump = false; key.up = false; key.fire = false; break;
         case 'ArrowDown': case 'KeyS': key.down = false; break;
         case 'KeyJ': case 'Enter': key.fire = false; break;
         case 'ShiftLeft': case 'ShiftRight': case 'KeyX': key.accel = false; break;

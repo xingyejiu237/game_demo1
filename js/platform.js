@@ -121,6 +121,8 @@
     frame.src = g.url;
     wrap.classList.remove('hidden');
     document.body.classList.add('in-game');
+    // 键盘焦点给到 iframe,否则游戏收不到按键
+    setTimeout(function () { try { frame.focus(); } catch (e) {} }, 50);
     // 防止 iframe 滚动
     if (history.replaceState) history.replaceState(null, '', '#play-' + g.id);
   }
