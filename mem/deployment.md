@@ -19,6 +19,7 @@
 - Pages 域名状态 `errored` 时(GitHub 不会自动重试):用 `PUT /repos/{owner}/{repo}/pages {"cname":"..."}` 重新触发,状态依次 `errored → building → built`,证书 SAN 更新比配置状态慢(几分钟~1 小时)。
 - 验证:`openssl s_client -connect yunxiangcity.top:443 -servername yunxiangcity.top | openssl x509 -noout -ext subjectAltName`,确认 SAN 含自定义域名。
 - 私有仓库免费套餐不支持 Pages(报 "Your current plan does not support..."),必须 Public。
+- **当前状态**:证书签发已完成配置(built),SAN 切换在途;用户决定不再跟进("能访问就行"),后续不要主动复查。github.io 默认地址证书正常,可作临时访问入口。
 
 ## Git 操作经验
 

@@ -17,7 +17,7 @@
 ## 环境与工具
 
 - Windows 10 + Git Bash;Python 可用;Chrome 可用于无头截图。
-- 配置了 vision skill(`~/.claude/skills/vision/`,调用外部视觉模型看图)——我这个模型不识图时用它。
+- 配置了 vision skill(`~/.claude/skills/vision/`,调用外部视觉模型看图)——我这个模型不识图时用它,且认可"AI 画图 → 视觉评审 → 修改 → 再评审"的闭环工作流(见 design-and-branding.md)。
 - 域名 `yunxiangcity.top` 购于 NameSilo,NS 托管在 Cloudflare(邮箱 Email Routing 也用)。
 - 信任度高:给了大量自主权("你自己设计记忆架构""按照你说的继续干"),但方向性的事仍会确认。
 
