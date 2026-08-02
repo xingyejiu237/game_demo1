@@ -74,7 +74,8 @@
     enemies = [];
     for (var i = 0; i < enemyN && i < spots.length; i++) {
       enemies.push({ x: spots[i][0] * CELL + 2, y: spots[i][1] * CELL + 2,
-                     dir: 0, speed: 0.9, alive: true, aiT: Math.random(), animT: 0 });
+                     dir: 0, speed: 1.05, alive: true, aiT: Math.random(), animT: 0,
+                     mode: 'wander', modeT: 0, bombCd: 1.5 + Math.random(), bombRange: 2 });
     }
     state = 'PLAY';
   }
@@ -275,28 +276,152 @@
     }
   }
 
-  // 敌人炸弹危险感知:附近 4 格内有炸弹 → 朝远离方向走(避免被自己炸死)
-  function avoidBombs(e) {
-    var ex = (e.x + 6) >> 4, ey = (e.y + 6) >> 4;
-    var best = null, bestD = 99;
+  // ============================================================
+  // 敌人 AI(有感知、会躲雷、会主动进攻)
+  // ============================================================
+  function isBlocked(cx, cy) {
+    var t = tileAt(cx, cy);
+    return t === 'X' || t === 'B' || !!bombAt(cx, cy);
+  }
+  // 炸弹火焰能否沿直线到达目标格(中间无砖阻挡)
+  function flameReaches(b, tx, ty) {
+    var dist = Math.abs(tx - b.cx) + Math.abs(ty - b.cy);
+    if (dist > b.range) return false;
+    var sx = tx === b.cx ? 0 : (tx > b.cx ? 1 : -1);
+    var sy = ty === b.cy ? 0 : (ty > b.cy ? 1 : -1);
+    var x = b.cx + sx, y = b.cy + sy;
+    while (!(x === tx && y === ty)) {
+      var t = tileAt(x, y);
+      if (t === 'X' || t === 'B') return false;
+      x += sx; y += sy;
+    }
+    return true;
+  }
+  // 格子是否会被场上"即将爆炸"的炸弹炸到
+  function cellInDanger(cx, cy) {
     for (var i = 0; i < bombs.length; i++) {
       var b = bombs[i];
-      var d = Math.abs(b.cx - ex) + Math.abs(b.cy - ey);
-      if (d < bestD) { bestD = d; best = b; }
+      if (b.t > 35) continue;                 // 还有时间,不构成紧迫威胁
+      if (flameReaches(b, cx, cy)) return true;
     }
-    if (!best || bestD > 4) return null;
-    var dx = ex - best.cx, dy = ey - best.cy;
-    // 优先逃最大距离的轴,备选垂直轴
-    var dirs = Math.abs(dx) >= Math.abs(dy)
+    return false;
+  }
+  // 放炸弹前评估:沿某方向是否存在足够长的逃生通道(爆炸范围格数)
+  // 返回逃生方向,无安全方向返回 -1
+  function escapePathOk(ax, ay, dir, depth) {
+    var dx = [0, 1, 0, -1][dir], dy = [-1, 0, 1, 0][dir];
+    var cx = ax, cy = ay;
+    for (var i = 0; i < depth; i++) {
+      if (isBlocked(cx, cy)) return false;
+      cx += dx; cy += dy;
+    }
+    return true;
+  }
+  function canPlaceSafely(e) {
+    var bx = (e.x + 6) >> 4, by = (e.y + 6) >> 4;
+    if (bombAt(bx, by)) return -1;
+    for (var d = 0; d < 4; d++) {
+      var ax = bx + [0, 1, 0, -1][d], ay = by + [-1, 0, 1, 0][d];
+      if (escapePathOk(ax, ay, d, e.bombRange)) return d;
+    }
+    return -1;
+  }
+  // 逃离所有炸弹的最佳方向
+  function escapeDir(e) {
+    var ex = (e.x + 6) >> 4, ey = (e.y + 6) >> 4;
+    var best = 0, bestScore = -999;
+    for (var d = 0; d < 4; d++) {
+      var nx = ex + [0, 1, 0, -1][d], ny = ey + [-1, 0, 1, 0][d];
+      if (isBlocked(nx, ny)) continue;
+      var score = 0;
+      for (var i = 0; i < bombs.length; i++) {
+        score += Math.abs(nx - bombs[i].cx) + Math.abs(ny - bombs[i].cy);
+      }
+      score += Math.random() * 0.5;
+      if (score > bestScore) { bestScore = score; best = d; }
+    }
+    return bestScore === -999 ? Math.floor(Math.random() * 4) : best;
+  }
+  // 朝目标方向(有障碍时顺延)
+  function dirToward(e, tx, ty) {
+    var ex = (e.x + 6) >> 4, ey = (e.y + 6) >> 4;
+    var dx = tx - ex, dy = ty - ey;
+    var cand = Math.abs(dx) >= Math.abs(dy)
       ? [dx > 0 ? 1 : 3, dy > 0 ? 2 : 0, dx > 0 ? 1 : 3, dy > 0 ? 2 : 0]
       : [dy > 0 ? 2 : 0, dx > 0 ? 1 : 3, dy > 0 ? 2 : 0, dx > 0 ? 1 : 3];
-    for (var k = 0; k < dirs.length; k++) {
-      var ddx = [0, 1, 0, -1][dirs[k]], ddy = [-1, 0, 1, 0][dirs[k]];
-      if (canStand(e.x + ddx * e.speed, e.y, e) && canStand(e.x, e.y + ddy * e.speed, e)) {
-        return dirs[k];
+    for (var k = 0; k < cand.length; k++) {
+      var nx = ex + [0, 1, 0, -1][cand[k]], ny = ey + [-1, 0, 1, 0][cand[k]];
+      if (!isBlocked(nx, ny)) return cand[k];
+    }
+    return Math.floor(Math.random() * 4);
+  }
+  // 直线视野:与玩家同列/同行且中间无遮挡 → {dist, dir}
+  function lineOfSight(e) {
+    var ex = (e.x + 6) >> 4, ey = (e.y + 6) >> 4;
+    var px = (player.x + 6) >> 4, py = (player.y + 6) >> 4;
+    var dist = Math.abs(ex - px) + Math.abs(ey - py);
+    if (dist > 7 || !player.alive) return null;
+    if (ex === px) {
+      var dirY = py > ey ? 1 : -1;
+      for (var y = ey + dirY; y !== py; y += dirY) {
+        var t = tileAt(ex, y);
+        if (t === 'X' || t === 'B') return null;
       }
+      return { dist: dist, dir: py > ey ? 2 : 0 };
+    }
+    if (ey === py) {
+      var dirX = px > ex ? 1 : -1;
+      for (var x = ex + dirX; x !== px; x += dirX) {
+        var t2 = tileAt(x, ey);
+        if (t2 === 'X' || t2 === 'B') return null;
+      }
+      return { dist: dist, dir: px > ex ? 1 : 3 };
     }
     return null;
+  }
+  function placeEnemyBomb(e) {
+    var bx = (e.x + 6) >> 4, by = (e.y + 6) >> 4;
+    bombs.push({ cx: bx, cy: by, t: BOMB_TICKS, range: e.bombRange, owner: 'enemy' });
+    global.AudioSys.sfx('place');
+  }
+  // 核心决策
+  function decideEnemy(e) {
+    var ex = (e.x + 6) >> 4, ey = (e.y + 6) >> 4;
+    // 1) 生存优先:正被火焰威胁 → 逃跑
+    if (cellInDanger(ex, ey)) {
+      e.mode = 'flee'; e.modeT = 1.1;
+      e.dir = escapeDir(e);
+      return;
+    }
+    // 2) 攻击:玩家在直线视野内
+    var sight = lineOfSight(e);
+    if (sight) {
+      e.mode = 'attack';
+      // 距离足够近且放雷有逃生路 → 放雷逼玩家
+      var fd = canPlaceSafely(e);
+      if (sight.dist <= e.bombRange && e.bombCd <= 0 && fd >= 0) {
+        placeEnemyBomb(e);
+        e.bombCd = 2.5 + Math.random() * 1.5;
+        e.mode = 'flee'; e.modeT = 1.2;
+        e.dir = fd;   // 沿预定的逃生通道跑
+        return;
+      }
+      e.dir = sight.dir;   // 逼近玩家
+      return;
+    }
+    // 3) 游走:玩家在附近(墙后)时试探放雷封路,否则向玩家方向靠拢
+    var mdist = Math.abs(ex - ((player.x + 6) >> 4)) + Math.abs(ey - ((player.y + 6) >> 4));
+    var fd2 = canPlaceSafely(e);
+    if (e.bombCd <= 0 && mdist <= 8 && Math.random() < 0.5 && fd2 >= 0) {
+      placeEnemyBomb(e);
+      e.bombCd = 3 + Math.random() * 2;
+      e.mode = 'flee'; e.modeT = 1.2;
+      e.dir = fd2;   // 沿预定的逃生通道跑
+      return;
+    }
+    e.mode = 'wander';
+    if (Math.random() < 0.65) e.dir = dirToward(e, (player.x + 6) >> 4, (player.y + 6) >> 4);
+    else e.dir = Math.floor(Math.random() * 4);
   }
 
   function updateEnemies(dt) {
@@ -304,33 +429,36 @@
       var e = enemies[i];
       if (!e.alive) { enemies.splice(i, 1); continue; }
       e.animT += dt;
+      e.bombCd -= dt;
       e.aiT -= dt;
+
+      // 紧迫威胁随时触发逃跑(最高优先级)
+      var ex = (e.x + 6) >> 4, ey = (e.y + 6) >> 4;
+      if (cellInDanger(ex, ey) && e.mode !== 'flee') {
+        e.mode = 'flee'; e.modeT = 1.0;
+        e.dir = escapeDir(e);
+      }
+      // 逃跑超时回归游走
+      if (e.mode === 'flee') {
+        e.modeT -= dt;
+        if (e.modeT <= 0) e.mode = 'wander';
+      }
+      // 决策周期
       if (e.aiT <= 0) {
-        e.aiT = 0.7 + Math.random() * 0.8;
-        var avoid = avoidBombs(e);       // 优先躲炸弹
-        if (avoid !== null) e.dir = avoid;
-        else e.dir = Math.floor(Math.random() * 4);
-      } else {
-        var avoid2 = avoidBombs(e);
-        if (avoid2 !== null) e.dir = avoid2;   // 炸弹逼近时随时转向
+        e.aiT = 0.45 + Math.random() * 0.55;
+        decideEnemy(e);
       }
+
       var dx = [0, 1, 0, -1][e.dir], dy = [-1, 0, 1, 0][e.dir];
-      var nx = e.x + dx * e.speed, ny = e.y + dy * e.speed;
+      var sp = e.mode === 'flee' ? e.speed * 1.4 : e.speed;   // 逃跑加速
+      var nx = e.x + dx * sp, ny = e.y + dy * sp;
       if (canStand(nx, e.y, e) && canStand(e.x, ny, e)) { e.x = nx; e.y = ny; }
-      else { e.dir = Math.floor(Math.random() * 4); }
-      // 敌人也会放炸弹(每隔几秒有概率,最多同时 3 枚)
-      e.bombT = (e.bombT || 2) - dt;
-      if (e.bombT <= 0) {
-        e.bombT = 2.5 + Math.random() * 2;
-        if (Math.random() < 0.45) {
-          var bx = (e.x + 6) >> 4, by = (e.y + 6) >> 4;
-          var cnt = 0;
-          for (var bi = 0; bi < bombs.length; bi++) if (bombs[bi].owner === 'enemy') cnt++;
-          if (cnt < 3 && !bombAt(bx, by)) {
-            bombs.push({ cx: bx, cy: by, t: BOMB_TICKS, range: 1 + Math.floor(Math.random() * 2), owner: 'enemy' });
-          }
-        }
+      else {
+        // 撞墙:逃跑中重算逃跑方向,否则立即重新决策
+        if (e.mode === 'flee') e.dir = escapeDir(e);
+        else e.aiT = 0;
       }
+
       // 撞到玩家
       if (player.alive && player.inv <= 0 &&
           player.x < e.x + 12 && player.x + 12 > e.x &&
