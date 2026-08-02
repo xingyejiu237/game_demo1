@@ -11,6 +11,7 @@
   var coinPopQueue = [];
   var lastRun = false;
   var frame = 0;
+  var popups = [];          // 飘字 {x, y, str, color, t}
 
   var Game = {
     level: null,
@@ -121,6 +122,7 @@
       updateFragments(dt);
       handleCollisions();
       handleCoinPops();
+      updatePopups(dt);
 
       // 旗杆触发(仅未开始时,防止滑杆/跑城堡阶段被反复打回)
       if (player.flagMode === 0 && player.x + player.w >= level.flagX * 16 + 4) {
@@ -204,7 +206,7 @@
           e.squash = 0.5;
           e.vy = 0;
           e.vx = 0;
-          addScore(100);
+          addScore(100, e.x, e.y - 6);
           global.AudioSys.sfx('stomp');
         } else if (e.type === 'koopa') {
           if (!e.shell) {
@@ -212,10 +214,10 @@
             e.shellSpeed = 0;
             e.h = 16;
             e.y += 6;
-            addScore(100);
+            addScore(100, e.x, e.y - 6);
           } else if (e.shellSpeed !== 0) {
             e.shellSpeed = 0;   // 停住壳
-            addScore(100);
+            addScore(100, e.x, e.y - 6);
           }
           // 注意:踩壳只弹起不踢出——落地瞬间的重叠帧若踢壳,壳会弹回打死玩家
           global.AudioSys.sfx('stomp');
@@ -231,7 +233,7 @@
           e.shellSpeed = player.vx > 0 ? 5 : -5;
           // 把壳推出玩家身体,避免起踢瞬间壳仍贴着脚边弹回伤到自己
           e.x = player.vx > 0 ? player.x + player.w + 1 : player.x - e.w - 1;
-          addScore(100);
+          addScore(100, e.x, e.y - 6);
           global.AudioSys.sfx('kick');
           continue;
         }
@@ -287,7 +289,7 @@
 
   function killEnemy(e, score) {
     e.dead = true;
-    addScore(score);
+    addScore(score, e.x, e.y - 6);
     if (e.type === 'goomba') e.squash = 0.4;
   }
 
@@ -295,7 +297,7 @@
     switch (it.itemType) {
       case 'coin':
         player.coins++;
-        addScore(200);
+        addScore(200, player.x, player.y - 12);
         if (player.coins % 100 === 0) player.lives++;
         global.AudioSys.sfx('coin');
         break;
@@ -305,29 +307,65 @@
           player.h = 31;
           player.y -= 15;
         }
-        addScore(1000);
+        addScore(1000, player.x, player.y - 12);
         global.AudioSys.sfx('powerup');
         break;
       case 'flower':
         if (player.state < 2) player.state = 2;
-        addScore(1000);
+        addScore(1000, player.x, player.y - 12);
         global.AudioSys.sfx('powerup');
         break;
       case 'star':
         player.starPower = 8;
-        addScore(1000);
+        addScore(1000, player.x, player.y - 12);
         global.AudioSys.sfx('powerup');
         break;
       case '1up':
         player.lives++;
-        addScore(1000);
+        addScore(1000, player.x, player.y - 12);
+        addPopup(player.x, player.y - 20, '1UP!', '#3cff88');
         global.AudioSys.sfx('oneup');
         break;
     }
   }
 
-  function addScore(n) {
+  function addScore(n, x, y) {
     player.score += n;
+    if (x !== undefined && y !== undefined) addPopup(x, y, String(n));
+  }
+
+  // ---------- 飘字(得分/1UP) ----------
+  function addPopup(x, y, str, color) {
+    popups.push({ x: x, y: y, str: str, color: color || '#ffffff', t: 0.9 });
+  }
+  function updatePopups(dt) {
+    for (var i = popups.length - 1; i >= 0; i--) {
+      popups[i].t -= dt;
+      if (popups[i].t <= 0) popups.splice(i, 1);
+    }
+  }
+  // 彩色像素字形(基于白色字形染色)
+  var colorGlyphCache = {};
+  function glyphColored(ch, color) {
+    var k = ch + '|' + color;
+    if (!colorGlyphCache[k]) {
+      var base = global.Sprites.glyph(ch);
+      var c = document.createElement('canvas');
+      c.width = 8; c.height = 8;
+      var g = c.getContext('2d');
+      g.drawImage(base, 0, 0);
+      g.globalCompositeOperation = 'source-in';
+      g.fillStyle = color;
+      g.fillRect(0, 0, 8, 8);
+      colorGlyphCache[k] = c;
+    }
+    return colorGlyphCache[k];
+  }
+  function textC(str, x, y, color, scale) {
+    scale = scale || 1;
+    for (var i = 0; i < str.length; i++) {
+      ctx.drawImage(glyphColored(str[i], color), x + i * 8 * scale, y, 8 * scale, 8 * scale);
+    }
   }
 
   // ---------- 方块交互 ----------
@@ -342,6 +380,7 @@
     addScore(50);
     global.AudioSys.sfx('brick');
     var px = tx * 16, py = ty * 16 + level.oy;
+    addScore(50, px + 8, py - 4);
     fragments.push(new global.Entities.Fragment(px, py, -1.5, -4));
     fragments.push(new global.Entities.Fragment(px + 8, py, 1.5, -4));
     fragments.push(new global.Entities.Fragment(px, py + 8, -1.5, -2));
@@ -357,7 +396,7 @@
     if (kind === 'coin') {
       level.setCell(tx, ty, 'U');
       level.special[tx + ',' + ty] = null;
-      addScore(200);
+      addScore(200, tx * 16 + 8, ty * 16 + level.oy - 4);
       player.coins++;
       global.AudioSys.sfx('coin');
       items.push(new global.Entities.Item('coin', cellX, cellY - 8, 0));
@@ -398,7 +437,7 @@
       if (c.t <= 0) {
         coinPopQueue.splice(i, 1);
         player.coins++;
-        addScore(200);
+        addScore(200, c.x + 4, c.y - 4);
         global.AudioSys.sfx('coin');
         items.push(new global.Entities.Item('coin', c.x + 4, c.y - 8, 0));
       }
@@ -449,6 +488,13 @@
       drawables.sort(function (a, b) { return a.y - b.y; });
       for (var n = 0; n < drawables.length; n++) drawables[n].render(ctx, camera);
       player.render(ctx, camera);
+
+      // 飘字(得分/1UP)
+      for (var pi = 0; pi < popups.length; pi++) {
+        var pp = popups[pi];
+        var ppy = pp.y - (0.9 - pp.t) * 24;   // 上飘
+        textC(pp.str, pp.x - camera, ppy, pp.color);
+      }
 
       drawHUD();
     }
