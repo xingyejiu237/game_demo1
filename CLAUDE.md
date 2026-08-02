@@ -47,3 +47,5 @@ node test/check-level.js            # 马里奥关卡数据完整性
 | 操作 | 换皮/规范 | `mem/design-and-branding.md` | 版权红线、命名风格、卡带注册、像素视觉约定 |
 
 部署要点一句话:GitHub Pages + `yunxiangcity.top`(DNS 在 Cloudflare,记录必须"仅 DNS"灰云),完整流程见 `mem/deployment.md`。
+
+> 记忆架构补充:用户级自动记忆(auto-memory,CC 本地 `~/.claude/projects/.../memory/`)已通过 `.claude/settings.local.json` 的 `autoMemoryEnabled: false` **禁用并删除**。理由:它不在仓库内、用户不可控,且内容与 `mem/` 重复。**本项目的记忆唯一来源就是 `mem/`(git 版本化)**。
