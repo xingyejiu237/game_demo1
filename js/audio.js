@@ -83,7 +83,21 @@
     fire:    function () { tone(800, 0.12, 'square', 0.12, 0, 200); noise(0.1, 0.1); },
     kick:    function () { tone(220, 0.1, 'square', 0.16, 0, 90); },
     start:   function () { tone(523, 0.12, 'square', 0.15); tone(784, 0.2, 'square', 0.15, ctx().currentTime + 0.11); },
-    pause:   function () { tone(392, 0.1, 'square', 0.12); tone(392, 0.1, 'square', 0.12, ctx().currentTime + 0.15); }
+    pause:   function () { tone(392, 0.1, 'square', 0.12); tone(392, 0.1, 'square', 0.12, ctx().currentTime + 0.15); },
+    // ---- 通用(坦克大战等共用) ----
+    shot:    function () { tone(880, 0.05, 'square', 0.1, 0, 240); },
+    explode: function () { noise(0.3, 0.35); tone(120, 0.25, 'square', 0.18, 0, 40); },
+    hit:     function () { tone(240, 0.07, 'square', 0.16, 0, 90); },
+    clear2:  function () {
+      var n = [523, 659, 784, 1047, 784, 1047];
+      var t = ctx().currentTime;
+      for (var i = 0; i < n.length; i++) tone(n[i], 0.12, 'square', 0.13, t + i * 0.1);
+    },
+    over:    function () {
+      var n = [392, 330, 262, 196, 131];
+      var t = ctx().currentTime;
+      for (var i = 0; i < n.length; i++) tone(n[i], 0.18, 'square', 0.16, t + i * 0.15);
+    }
   };
 
   // ---------- 背景音乐(原创 chiptune,灵感取自经典旋律) ----------

@@ -1,0 +1,87 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  font-family: monospace;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas#game {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: min(100vw, calc(100vh * 256 / 240));
+  height: min(100vh, calc(100vw * 240 / 256));
+  background: #000;
+  touch-action: none;
+  box-shadow: 0 0 40px rgba(80, 160, 255, 0.2);
+}
+
+/* ---------- 触摸按钮 ---------- */
+.touch-ui {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+}
+
+@media (pointer: coarse), (hover: none), (any-pointer: coarse) {
+  .touch-ui { display: block; }
+}
+
+.pad-left { position: absolute; left: 4%; bottom: 6%; }
+.pad-right { position: absolute; right: 4%; bottom: 6%; }
+
+.dpad {
+  position: relative;
+  width: 132px; height: 132px;
+}
+.dpad .tbtn { position: absolute; }
+.dp-up    { left: 35px; top: 0; }
+.dp-left  { left: 0;  top: 35px; }
+.dp-right { left: 70px; top: 35px; }
+.dp-down  { left: 35px; top: 70px; }
+
+.tbtn {
+  pointer-events: auto;
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex; align-items: center; justify-content: center;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  outline: none;
+  transition: background 0.05s;
+}
+.tbtn span { pointer-events: none; }
+.tbtn:active, .tbtn.pressed {
+  background: rgba(120, 180, 255, 0.5);
+  box-shadow: 0 0 18px rgba(120, 180, 255, 0.5);
+}
+
+.btn-fire {
+  width: 84px; height: 84px;
+  font-size: 18px;
+  border-color: rgba(255, 120, 90, 0.5);
+  background: rgba(255, 90, 60, 0.18);
+}
+.btn-fire:active, .btn-fire.pressed {
+  background: rgba(255, 120, 90, 0.5);
+  box-shadow: 0 0 18px rgba(255, 120, 90, 0.5);
+}

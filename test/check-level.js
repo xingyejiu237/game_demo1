@@ -28,9 +28,9 @@ function makeCanvas() {
   };
 }
 
-require('../js/sprites.js');
-require('../js/level.js');
-require('../js/levels/w1-1.js');
+require('../games/mario/js/sprites.js');
+require('../games/mario/js/level.js');
+require('../games/mario/js/levels/w1-1.js');
 
 var L = new global.Level(LEVEL_1_1);
 var problems = 0;

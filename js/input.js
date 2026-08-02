@@ -8,11 +8,14 @@
     jump: false,     // 跳跃键按住
     run:  false,     // 加速键按住
     jumpTap: false,  // 本帧“刚刚按下跳跃”的边沿触发
+    up: false,       // 上(坦克大战等)
+    down: false,     // 下
+    fire: false,     // 射击按住
     anyKey: false    // 本帧有任意输入(用于标题/继续)
   };
 
-  var key = { left:false, right:false, jump:false, accel:false };
-  var touch = { left:false, right:false, jump:false, run:false };
+  var key = { left:false, right:false, jump:false, accel:false, up:false, down:false, fire:false };
+  var touch = { left:false, right:false, jump:false, run:false, up:false, down:false, fire:false };
 
   var init = false;
 
@@ -35,6 +38,8 @@
         case 'ArrowUp': case 'KeyW': case 'Space': case 'KeyZ':
           if (!key.jump) actions.jumpTap = true;
           key.jump = true; break;
+        case 'ArrowDown': case 'KeyS': key.down = true; break;
+        case 'KeyJ': case 'Enter': key.fire = true; break;
         case 'ShiftLeft': case 'ShiftRight': case 'KeyX': key.accel = true; break;
         default: r = false;
       }
@@ -50,6 +55,8 @@
         case 'ArrowLeft':  case 'KeyA': key.left = false; break;
         case 'ArrowRight': case 'KeyD': key.right = false; break;
         case 'ArrowUp': case 'KeyW': case 'Space': case 'KeyZ': key.jump = false; break;
+        case 'ArrowDown': case 'KeyS': key.down = false; break;
+        case 'KeyJ': case 'Enter': key.fire = false; break;
         case 'ShiftLeft': case 'ShiftRight': case 'KeyX': key.accel = false; break;
       }
     });
@@ -70,6 +77,9 @@
         btn.classList.toggle('pressed', on);
         if (k === 'left')  touch.left = on;
         if (k === 'right') touch.right = on;
+        if (k === 'up')    touch.up = on;
+        if (k === 'down')  touch.down = on;
+        if (k === 'fire')  touch.fire = on;
         if (k === 'jump') {
           if (on && !touch.jump) actions.jumpTap = true;
           touch.jump = on;
@@ -99,6 +109,9 @@
     actions.dir = (key.left || touch.left ? -1 : 0) + (key.right || touch.right ? 1 : 0);
     actions.jump = !!(key.jump || touch.jump);
     actions.run  = !!(key.accel || touch.run);
+    actions.up   = !!(key.up || touch.up);
+    actions.down = !!(key.down || touch.down);
+    actions.fire = !!(key.fire || touch.fire);
   }
 
   function endFrame() {

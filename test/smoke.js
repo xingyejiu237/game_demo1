@@ -35,13 +35,13 @@ global.addEventListener = function () {};
 global.requestAnimationFrame = function () {};
 if (!global.AudioContext) global.AudioContext = undefined;
 
-require('../js/sprites.js');
+require('../games/mario/js/sprites.js');
 require('../js/audio.js');
 require('../js/input.js');
-require('../js/level.js');
-require('../js/levels/w1-1.js');
-require('../js/entities.js');
-require('../js/main.js');
+require('../games/mario/js/level.js');
+require('../games/mario/js/levels/w1-1.js');
+require('../games/mario/js/entities.js');
+require('../games/mario/js/main.js');
 
 var Game = global.Game;
 var Input = global.Input;

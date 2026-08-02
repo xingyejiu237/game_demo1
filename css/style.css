@@ -70,3 +70,147 @@ canvas#game {
 .btn-a { width: 78px; height: 78px; font-size: 30px; }
 .btn-b { width: 58px; height: 58px; font-size: 22px; }
 .btn-left, .btn-right { font-size: 24px; }
+
+/* ============================================================
+   云想游戏厅 · 主菜单
+   ============================================================ */
+#console {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0 2px, transparent 2px 4px),
+    radial-gradient(ellipse at 50% -20%, #2a2a44 0%, #171728 55%, #0e0e18 100%);
+  color: #e8e8f0;
+  font-family: monospace;
+}
+
+.arcade-head {
+  text-align: center;
+  padding: 28px 16px 8px;
+}
+.arcade-logo h1 {
+  font-size: 34px;
+  letter-spacing: 6px;
+  margin: 6px 0 2px;
+  color: #fff;
+  text-shadow: 0 0 12px rgba(120, 160, 255, 0.8), 3px 3px 0 #3a2a6a;
+}
+.arcade-logo p {
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #8a8ab8;
+  margin: 4px 0 0;
+}
+.logo-pixels {
+  width: 64px; height: 8px;
+  margin: 0 auto;
+  background: repeating-linear-gradient(90deg,
+    #e40000 0 12px, #f8b800 12px 24px, #28a030 24px 36px, #2838f8 36px 48px);
+  box-shadow: 0 4px 14px rgba(255, 90, 60, 0.35);
+}
+
+#cart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+  width: min(92%, 640px);
+  padding: 22px 0;
+}
+
+.cart {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 8px 10px;
+  border: 2px solid #3a3a5a;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #23233a, #181828);
+  color: #e8e8f0;
+  font-family: monospace;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.06s, border-color 0.1s, box-shadow 0.1s;
+}
+.cart-play:hover, .cart-play:active {
+  border-color: #7aa8ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(90, 140, 255, 0.25);
+}
+.cart-soon {
+  border-style: dashed;
+  border-color: #2c2c42;
+  background: linear-gradient(180deg, #1a1a28, #141420);
+  cursor: default;
+  opacity: 0.75;
+}
+.cart-art canvas {
+  width: 48px; height: 48px;
+  image-rendering: pixelated;
+  border-radius: 4px;
+}
+.cart-question {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; color: #4a4a6a;
+}
+.cart-info { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.cart-info b { font-size: 15px; letter-spacing: 1px; color: #fff; }
+.cart-info i { font-size: 11px; color: #8a8ab8; font-style: normal; }
+.cart em {
+  font-style: normal;
+  font-size: 12px;
+  color: #9fd0ff;
+  border: 1px solid #3a5a8a;
+  border-radius: 20px;
+  padding: 2px 12px;
+  margin-top: 2px;
+}
+
+.arcade-foot {
+  text-align: center;
+  padding: 6px 16px 30px;
+  font-size: 11px;
+  color: #6a6a90;
+  letter-spacing: 1px;
+}
+.arcade-foot .dim { color: #48486a; margin-top: 4px; }
+
+/* ---------- 游戏 iframe 容器 ---------- */
+#game-wrap {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 50;
+}
+#game-wrap.hidden { display: none; }
+#game-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+#btn-back {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 60;
+  font-family: monospace;
+  font-size: 14px;
+  color: #fff;
+  background: rgba(20, 20, 40, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+  backdrop-filter: blur(2px);
+}
+#btn-back:active { background: rgba(120, 160, 255, 0.35); }

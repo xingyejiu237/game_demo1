@@ -1,0 +1,73 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: #000;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  font-family: monospace;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas#game {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: min(100vw, calc(100vh * 256 / 240));
+  height: min(100vh, calc(100vw * 240 / 256));
+  background: #000;
+  touch-action: none;
+  box-shadow: 0 0 40px rgba(60, 120, 255, 0.25);
+}
+
+/* ---------- 触摸按钮 ---------- */
+.touch-ui {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+}
+
+@media (pointer: coarse), (hover: none), (any-pointer: coarse) {
+  .touch-ui { display: block; }
+}
+
+.pad-left { position: absolute; left: 4%; bottom: 6%; display: flex; gap: 14px; }
+.pad-right { position: absolute; right: 4%; bottom: 6%; display: flex; gap: 12px; align-items: flex-end; }
+
+.tbtn {
+  pointer-events: auto;
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 26px;
+  font-weight: bold;
+  display: flex; align-items: center; justify-content: center;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  outline: none;
+  box-shadow: 0 0 0 rgba(255,255,255,0);
+  transition: background 0.05s, box-shadow 0.05s;
+}
+.tbtn span { pointer-events: none; }
+
+.tbtn:active, .tbtn.pressed {
+  background: rgba(255,255,255,0.45);
+  box-shadow: 0 0 18px rgba(255,255,255,0.5);
+}
+
+.btn-a { width: 78px; height: 78px; font-size: 30px; }
+.btn-b { width: 58px; height: 58px; font-size: 22px; }
+.btn-left, .btn-right { font-size: 24px; }
+

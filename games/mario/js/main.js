@@ -471,7 +471,7 @@
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, 256, 32);
     ctx.fillStyle = '#fff';
-    text('MARIO', 8, 4);
+    text('HERO', 8, 4);
     text(pad(player.score, 6), 8, 14);
     // 金币
     global.Sprites.get('coin');
@@ -496,12 +496,14 @@
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(0, 0, 256, 240);
     ctx.fillStyle = '#fff';
-    text('SUPER', 96, 60, 2);
-    text('MARIO', 84, 84, 2);
-    text('BROS.', 96, 108, 2);
-    text('WORLD 1-1', 88, 140, 1);
+    text('MUSHROOM', 52, 60, 2);
+    text('HERO', 92, 88, 2);
+    ctx.fillStyle = '#8ad0ff';
+    ctx.font = '10px monospace';
+    ctx.fillText('蘑菇勇者 · 云想游戏厅', 72, 112);
+    text('WORLD 1-1', 88, 136, 1);
     if (Math.floor(Date.now() / 500) % 2 === 0) {
-      text('PRESS TO START', 64, 176, 1);
+      text('PRESS TO START', 64, 172, 1);
       // 中文提示用系统字体(像素字库无中文字形)
       ctx.fillStyle = '#fff';
       ctx.font = '9px monospace';
