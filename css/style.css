@@ -72,7 +72,7 @@ canvas#game {
 .btn-left, .btn-right { font-size: 24px; }
 
 /* ============================================================
-   云想游戏厅 · 主菜单
+   云想游戏厅 · 主菜单(红白机卡带 + CRT 街机风)
    ============================================================ */
 #console {
   position: fixed;
@@ -81,105 +81,193 @@ canvas#game {
   flex-direction: column;
   align-items: center;
   overflow-y: auto;
-  background:
-    repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0 2px, transparent 2px 4px),
-    radial-gradient(ellipse at 50% -20%, #2a2a44 0%, #171728 55%, #0e0e18 100%);
   color: #e8e8f0;
   font-family: monospace;
+  background:
+    /* CRT 扫描线 */
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.22) 0 2px, transparent 2px 4px),
+    /* 中心光晕 */
+    radial-gradient(ellipse 80% 60% at 50% 8%, rgba(120, 80, 255, 0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(60, 120, 255, 0.10) 0%, transparent 55%),
+    linear-gradient(180deg, #14142a 0%, #0c0c18 60%, #0a0a14 100%);
+}
+
+/* 顶部霓虹氛围灯 */
+#console::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,
+    transparent, #ff5a3c 12%, #ffd23c 26%, #3cff88 42%,
+    #3cc8ff 58%, #7a5cff 74%, #ff5a9c 88%, transparent);
+  opacity: 0.85;
+  box-shadow: 0 0 18px rgba(120, 140, 255, 0.45);
 }
 
 .arcade-head {
   text-align: center;
-  padding: 28px 16px 8px;
+  padding: 40px 16px 12px;
 }
 .arcade-logo h1 {
-  font-size: 34px;
-  letter-spacing: 6px;
-  margin: 6px 0 2px;
+  font-size: 40px;
+  letter-spacing: 10px;
+  margin: 10px 0 4px;
   color: #fff;
-  text-shadow: 0 0 12px rgba(120, 160, 255, 0.8), 3px 3px 0 #3a2a6a;
+  text-shadow:
+    0 0 10px rgba(140, 170, 255, 0.9),
+    0 0 32px rgba(90, 120, 255, 0.55),
+    4px 4px 0 #3a2a6a,
+    6px 6px 0 rgba(0, 0, 0, 0.6);
 }
 .arcade-logo p {
   font-size: 12px;
-  letter-spacing: 3px;
+  letter-spacing: 4px;
   color: #8a8ab8;
-  margin: 4px 0 0;
+  margin: 6px 0 0;
+  text-shadow: 0 0 8px rgba(140, 160, 255, 0.35);
 }
 .logo-pixels {
-  width: 64px; height: 8px;
+  width: 96px; height: 10px;
   margin: 0 auto;
   background: repeating-linear-gradient(90deg,
-    #e40000 0 12px, #f8b800 12px 24px, #28a030 24px 36px, #2838f8 36px 48px);
-  box-shadow: 0 4px 14px rgba(255, 90, 60, 0.35);
+    #e40000 0 18px, #f8b800 18px 36px, #28a030 36px 54px, #2838f8 54px 72px);
+  box-shadow: 0 4px 18px rgba(255, 90, 60, 0.4);
+  animation: logoGlow 2.4s ease-in-out infinite;
+}
+@keyframes logoGlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.72; }
 }
 
 #cart-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 14px;
-  width: min(92%, 640px);
-  padding: 22px 0;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 18px;
+  width: min(92%, 660px);
+  padding: 26px 0 10px;
 }
 
+/* ---------- 卡带卡片 ---------- */
 .cart {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 8px 10px;
-  border: 2px solid #3a3a5a;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #23233a, #181828);
+  padding: 0 0 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #2e2e4e 0%, #1c1c34 30%, #14142a 100%);
   color: #e8e8f0;
   font-family: monospace;
   cursor: pointer;
   touch-action: manipulation;
-  transition: transform 0.06s, border-color 0.1s, box-shadow 0.1s;
+  overflow: hidden;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -12px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.08s, box-shadow 0.12s, filter 0.12s;
 }
-.cart-play:hover, .cart-play:active {
-  border-color: #7aa8ff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(90, 140, 255, 0.25);
+
+/* 卡带齿(上缘插槽) */
+.cart-teeth {
+  display: block;
+  height: 10px;
+  background: repeating-linear-gradient(90deg,
+    #3a3a5e 0 12px, #14142a 12px 16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex: none;
 }
-.cart-soon {
-  border-style: dashed;
-  border-color: #2c2c42;
-  background: linear-gradient(180deg, #1a1a28, #141420);
-  cursor: default;
-  opacity: 0.75;
+
+.cart-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 10px 8px;
 }
+
 .cart-art canvas {
-  width: 48px; height: 48px;
+  width: 56px; height: 56px;
   image-rendering: pixelated;
-  border-radius: 4px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 .cart-question {
-  width: 48px; height: 48px;
+  width: 56px; height: 56px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 30px; color: #4a4a6a;
+  font-size: 34px; color: #4a4a6a;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 6px;
 }
-.cart-info { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.cart-info b { font-size: 15px; letter-spacing: 1px; color: #fff; }
-.cart-info i { font-size: 11px; color: #8a8ab8; font-style: normal; }
-.cart em {
+
+.cart-info { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.cart-info b {
+  font-size: 17px;
+  letter-spacing: 2px;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+.cart-info i {
+  font-size: 11px;
+  color: #9a9ac8;
   font-style: normal;
+  letter-spacing: 1px;
+}
+
+.cart-badge {
+  font-style: normal;
+  align-self: center;
   font-size: 12px;
-  color: #9fd0ff;
-  border: 1px solid #3a5a8a;
+  letter-spacing: 2px;
+  color: #a8d8ff;
+  border: 1px solid rgba(120, 180, 255, 0.45);
   border-radius: 20px;
-  padding: 2px 12px;
+  padding: 4px 16px;
   margin-top: 2px;
+  background: rgba(60, 120, 255, 0.10);
+  box-shadow: 0 0 12px rgba(90, 140, 255, 0.15);
+}
+
+/* 可玩卡带:悬停发光上浮 */
+.cart-play:hover, .cart-play:active {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.6),
+    0 0 24px rgba(120, 160, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  filter: brightness(1.12);
+}
+.cart-play:hover .cart-badge {
+  background: rgba(120, 180, 255, 0.28);
+  box-shadow: 0 0 18px rgba(120, 180, 255, 0.4);
+}
+
+/* 敬请期待:暗色虚线卡 */
+.cart-soon {
+  background: linear-gradient(180deg, #1e1e30 0%, #161624 100%);
+  cursor: default;
+  opacity: 0.85;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.cart-soon .cart-teeth {
+  background: repeating-linear-gradient(90deg, #26263c 0 12px, #12121e 12px 16px);
+}
+.cart-soon .cart-badge {
+  color: #6a6a90;
+  border-color: rgba(120, 120, 160, 0.3);
+  background: transparent;
 }
 
 .arcade-foot {
   text-align: center;
-  padding: 6px 16px 30px;
+  padding: 8px 16px 34px;
   font-size: 11px;
   color: #6a6a90;
   letter-spacing: 1px;
 }
-.arcade-foot .dim { color: #48486a; margin-top: 4px; }
+.arcade-foot .dim { color: #48486a; margin-top: 5px; }
 
 /* ---------- 游戏 iframe 容器 ---------- */
 #game-wrap {

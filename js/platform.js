@@ -77,11 +77,19 @@
       card.className = 'cart ' + (g.status === 'soon' ? 'cart-soon' : 'cart-play');
       card.setAttribute('data-id', g.id);
 
+      // 卡带齿(上缘)
+      var teeth = document.createElement('span');
+      teeth.className = 'cart-teeth';
+
+      // 标签区:图标 + 文字
+      var label = document.createElement('span');
+      label.className = 'cart-label';
+
       var art = document.createElement('span');
       art.className = 'cart-art';
       if (g.icon) {
         var cv = document.createElement('canvas');
-        cv.width = 48; cv.height = 48;
+        cv.width = 64; cv.height = 64;
         if (g.icon === 'mario') drawMarioIcon(cv.getContext('2d'));
         if (g.icon === 'tank') drawTankIcon(cv.getContext('2d'));
         art.appendChild(cv);
@@ -100,13 +108,17 @@
       s.textContent = g.subtitle;
       info.appendChild(t); info.appendChild(s);
 
-      card.appendChild(art);
-      card.appendChild(info);
-      if (g.status === 'play') {
-        var play = document.createElement('em');
-        play.textContent = '▶ 开始';
-        card.appendChild(play);
-      }
+      label.appendChild(art);
+      label.appendChild(info);
+
+      // 状态徽章
+      var badge = document.createElement('em');
+      badge.className = 'cart-badge';
+      badge.textContent = g.status === 'play' ? '▶ 开始' : '敬请期待';
+
+      card.appendChild(teeth);
+      card.appendChild(label);
+      card.appendChild(badge);
       card.addEventListener('click', function () {
         if (g.status === 'play') launch(g);
       });

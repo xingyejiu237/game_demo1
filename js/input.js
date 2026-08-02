@@ -35,13 +35,13 @@
       switch (e.code) {
         case 'ArrowLeft':  case 'KeyA': key.left = true; break;
         case 'ArrowRight': case 'KeyD': key.right = true; break;
-        case 'ArrowUp': case 'KeyW': case 'Space': case 'KeyZ':
-          if (!key.jump) actions.jumpTap = true;
-          key.jump = true;
-          key.up = true;     // 坦克大战的上方向
-          key.fire = true;   // 空格/Z 也当射击(坦克)
-          break;
+        case 'ArrowUp': case 'KeyW': key.up = true; break;   // 上方向(不触发射击)
         case 'ArrowDown': case 'KeyS': key.down = true; break;
+        case 'Space': case 'KeyZ':
+          if (!key.jump) actions.jumpTap = true;
+          key.jump = true;     // 马里奥跳跃
+          key.fire = true;     // 坦克射击
+          break;
         case 'KeyJ': case 'Enter': key.fire = true; break;
         case 'ShiftLeft': case 'ShiftRight': case 'KeyX': key.accel = true; break;
         default: r = false;
@@ -57,9 +57,9 @@
       switch (e.code) {
         case 'ArrowLeft':  case 'KeyA': key.left = false; break;
         case 'ArrowRight': case 'KeyD': key.right = false; break;
-        case 'ArrowUp': case 'KeyW': case 'Space': case 'KeyZ':
-          key.jump = false; key.up = false; key.fire = false; break;
+        case 'ArrowUp': case 'KeyW': key.up = false; break;
         case 'ArrowDown': case 'KeyS': key.down = false; break;
+        case 'Space': case 'KeyZ': key.jump = false; key.fire = false; break;
         case 'KeyJ': case 'Enter': key.fire = false; break;
         case 'ShiftLeft': case 'ShiftRight': case 'KeyX': key.accel = false; break;
       }
