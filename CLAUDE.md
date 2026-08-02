@@ -40,6 +40,7 @@ node test/check-level.js            # 马里奥关卡数据完整性
 |---|---|---|---|
 | 人格 | 身份 | `mem/identity.md` | 项目编年史、关键决策与原因、价值观 |
 | 人格 | 用户 | `mem/user-profile.md` | 用户画像、协作偏好、沟通风格 |
+| 方法 | 架构决策 | `mem/architecture-decisions.md` | 用户总结的扩展性增益/革新工作量公式,加功能前先问规模 |
 | 操作 | 输入 | `mem/input-and-controls.md` | 键位映射表、触摸按钮、compact 模式、iframe 焦点、输入踩坑 |
 | 操作 | 物理/游戏 | `mem/physics-and-games.md` | 帧计数语义、32px 偏移、踩敌判定、炸弹/连锁/敌人 AI 细节 |
 | 操作 | 部署 | `mem/deployment.md` | Cloudflare 灰云规则、证书 errored 重触发、git 凭证踩坑 |
