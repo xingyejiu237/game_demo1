@@ -275,6 +275,30 @@
     }
   }
 
+  // 敌人炸弹危险感知:附近 4 格内有炸弹 → 朝远离方向走(避免被自己炸死)
+  function avoidBombs(e) {
+    var ex = (e.x + 6) >> 4, ey = (e.y + 6) >> 4;
+    var best = null, bestD = 99;
+    for (var i = 0; i < bombs.length; i++) {
+      var b = bombs[i];
+      var d = Math.abs(b.cx - ex) + Math.abs(b.cy - ey);
+      if (d < bestD) { bestD = d; best = b; }
+    }
+    if (!best || bestD > 4) return null;
+    var dx = ex - best.cx, dy = ey - best.cy;
+    // 优先逃最大距离的轴,备选垂直轴
+    var dirs = Math.abs(dx) >= Math.abs(dy)
+      ? [dx > 0 ? 1 : 3, dy > 0 ? 2 : 0, dx > 0 ? 1 : 3, dy > 0 ? 2 : 0]
+      : [dy > 0 ? 2 : 0, dx > 0 ? 1 : 3, dy > 0 ? 2 : 0, dx > 0 ? 1 : 3];
+    for (var k = 0; k < dirs.length; k++) {
+      var ddx = [0, 1, 0, -1][dirs[k]], ddy = [-1, 0, 1, 0][dirs[k]];
+      if (canStand(e.x + ddx * e.speed, e.y, e) && canStand(e.x, e.y + ddy * e.speed, e)) {
+        return dirs[k];
+      }
+    }
+    return null;
+  }
+
   function updateEnemies(dt) {
     for (var i = enemies.length - 1; i >= 0; i--) {
       var e = enemies[i];
@@ -283,7 +307,12 @@
       e.aiT -= dt;
       if (e.aiT <= 0) {
         e.aiT = 0.7 + Math.random() * 0.8;
-        e.dir = Math.floor(Math.random() * 4);
+        var avoid = avoidBombs(e);       // 优先躲炸弹
+        if (avoid !== null) e.dir = avoid;
+        else e.dir = Math.floor(Math.random() * 4);
+      } else {
+        var avoid2 = avoidBombs(e);
+        if (avoid2 !== null) e.dir = avoid2;   // 炸弹逼近时随时转向
       }
       var dx = [0, 1, 0, -1][e.dir], dy = [-1, 0, 1, 0][e.dir];
       var nx = e.x + dx * e.speed, ny = e.y + dy * e.speed;

@@ -409,8 +409,10 @@
     ctx.font = 'bold 34px monospace';
     ctx.fillText('钢铁前线', 52, 100);
     ctx.fillStyle = '#7ab8ff';
-    ctx.font = 'bold 14px monospace';
-    ctx.fillText('STEEL FRONT · 装甲对决', 52, 130);
+    ctx.font = 'bold 16px monospace';
+    ctx.fillText('STEEL FRONT', 48, 128);
+    ctx.font = 'bold 13px monospace';
+    ctx.fillText('装甲对决', 92, 150);
     ctx.fillStyle = '#fff';
     ctx.font = '12px monospace';
     ctx.fillText('守住基地,消灭全部敌人', 56, 156);

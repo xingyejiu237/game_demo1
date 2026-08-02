@@ -29,6 +29,14 @@
       if (touchUI) touchUI.style.display = 'block';
     }
 
+    // 矮屏(横屏/小屏)按钮紧凑模式:JS 检测比 media query 更可靠
+    function fitButtons() {
+      var stageEl = document.getElementById('stage');
+      if (stageEl) stageEl.classList.toggle('compact', window.innerHeight < 700);
+    }
+    window.addEventListener('resize', fitButtons);
+    fitButtons();
+
     // ---- 键盘 ----
     document.addEventListener('keydown', function (e) {
       var r = true;

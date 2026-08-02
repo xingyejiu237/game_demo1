@@ -40,8 +40,14 @@ canvas#game {
   .touch-ui { display: block; }
 }
 
-.pad-left { position: absolute; left: 5%; bottom: calc(7% + env(safe-area-inset-bottom, 0px)); display: flex; gap: 16px; }
-.pad-right { position: absolute; right: 5%; bottom: calc(7% + env(safe-area-inset-bottom, 0px)); display: flex; gap: 14px; align-items: flex-end; }
+.pad-left { position: absolute; left: 4%; bottom: calc(4% + env(safe-area-inset-bottom, 0px)); display: flex; gap: 16px; }
+.pad-right { position: absolute; right: 4%; bottom: calc(4% + env(safe-area-inset-bottom, 0px)); display: flex; gap: 14px; align-items: flex-end; }
+
+/* 矮屏(横屏/小屏手机):按钮整体缩小,减少遮挡游戏画面 */
+#stage.compact .tbtn { width: 56px; height: 56px; font-size: 22px; }
+#stage.compact .btn-a { width: 78px; height: 78px; font-size: 28px; }
+#stage.compact .btn-b { width: 54px; height: 54px; font-size: 20px; }
+#stage.compact .pad-left, #stage.compact .pad-right { bottom: calc(3% + env(safe-area-inset-bottom, 0px)); }
 
 .tbtn {
   pointer-events: auto;
