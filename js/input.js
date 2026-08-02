@@ -35,7 +35,11 @@
       switch (e.code) {
         case 'ArrowLeft':  case 'KeyA': key.left = true; break;
         case 'ArrowRight': case 'KeyD': key.right = true; break;
-        case 'ArrowUp': case 'KeyW': key.up = true; break;   // 上方向(不触发射击)
+        case 'ArrowUp': case 'KeyW':
+          if (!key.jump) actions.jumpTap = true;
+          key.jump = true;     // 马里奥跳跃
+          key.up = true;       // 坦克上方向(不触发射击)
+          break;
         case 'ArrowDown': case 'KeyS': key.down = true; break;
         case 'Space': case 'KeyZ':
           if (!key.jump) actions.jumpTap = true;
@@ -57,7 +61,7 @@
       switch (e.code) {
         case 'ArrowLeft':  case 'KeyA': key.left = false; break;
         case 'ArrowRight': case 'KeyD': key.right = false; break;
-        case 'ArrowUp': case 'KeyW': key.up = false; break;
+        case 'ArrowUp': case 'KeyW': key.jump = false; key.up = false; break;
         case 'ArrowDown': case 'KeyS': key.down = false; break;
         case 'Space': case 'KeyZ': key.jump = false; key.fire = false; break;
         case 'KeyJ': case 'Enter': key.fire = false; break;
