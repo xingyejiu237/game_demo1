@@ -69,6 +69,13 @@ TG._step(1 / 60);
 act.fire = false;
 check('子弹出现', TG._bullets().length > 0);
 
+// 连发:按住射击 120 帧(冷却 16 帧/发),应打出多颗子弹
+var shotFrames = 0;
+act.fire = true;
+for (var fi = 0; fi < 120; fi++) { TG._step(1 / 60); if (TG._bullets().length > 0) shotFrames++; }
+act.fire = false;
+check('按住射击可连发(shotFrames=' + shotFrames + ')', shotFrames >= 10);
+
 // 向上移动(子弹已开路,砖会被打碎)
 act.up = true;
 for (var i = 0; i < 40; i++) TG._step(1 / 60);
@@ -93,9 +100,19 @@ for (var k = 0; k < 240; k++) TG._step(1 / 60);
 check('敌人生成', TG._enemies().length > 0);
 check('敌人不超过 3 个', TG._enemies().length <= 3);
 
-// 长时间运行不崩(5000 帧 ≈ 83 秒)
+// 敌人会开火(冷却 1 秒+35% 概率,1800 帧内应打出子弹)
+var enemyShots = 0;
+TG._bullets().length = 0;
+for (var ks = 0; ks < 1800; ks++) {
+  TG._step(1 / 60);
+  var bs = TG._bullets();
+  for (var bi = 0; bi < bs.length; bi++) if (!bs[bi].owner.isPlayer) enemyShots++;
+}
+check('敌人会开火(enemyShots=' + enemyShots + ')', enemyShots > 0);
+
+// 长时间运行不崩(5000 帧 ≈ 83 秒,可能经历死亡回标题等完整流程)
 for (var m = 0; m < 5000; m++) TG._step(1 / 60);
-check('长时间运行状态正常', TG._state() === 'PLAY' || TG._state() === 'OVER' || TG._state() === 'CLEAR');
+check('长时间运行状态正常', ['PLAY', 'OVER', 'CLEAR', 'TITLE'].indexOf(TG._state()) >= 0);
 
 // 基地存在性:地图含 F
 var hasBase = false;

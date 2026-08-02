@@ -15,6 +15,7 @@
   var baseAlive = true;
   var spawns = [];
   var playerSpawn = null;
+  var baseTgt = { x: 6 * 16 + 8, y: 12 * 16 + 8 };   // 基地中心(敌人瞄准用)
 
   // ---------- 地图(13x13,原创布局) ----------
   // . 空地  B 砖  S 钢  G 草(装饰)  F 基地  P 玩家出生  E 敌人出生
@@ -98,6 +99,7 @@
         var c = map[y][x];
         if (c === 'P') { playerSpawn = { x: x, y: y }; map[y][x] = '.'; }
         else if (c === 'E') { spawns.push({ x: x, y: y }); map[y][x] = '.'; }
+        else if (c === 'F') { baseTgt.x = x * 16 + 8; baseTgt.y = y * 16 + 8; }
       }
     }
     player = { x: playerSpawn.x * 16 + 1, y: playerSpawn.y * 16 + 1,
@@ -197,7 +199,7 @@
   function updatePlayer() {
     if (!player.alive) return;
     if (player.inv > 0) player.inv -= 1 / 60;
-    if (player.fireCd > 0) player.fireCd -= 1 / 60;
+    if (player.fireCd > 0) player.fireCd -= 1;   // 帧计数
     var inp = global.Input.actions;
     var ndir = -1;
     if (inp.up) ndir = 0;
@@ -240,7 +242,7 @@
       var e = enemies[i];
       if (!e.alive) { enemies.splice(i, 1); enemyAlive--; continue; }
       if (e.inv > 0) e.inv -= dt;
-      if (e.fireCd > 0) e.fireCd -= dt;
+      if (e.fireCd > 0) e.fireCd -= 1;   // 帧计数
 
       // AI:随机转向(30% 朝玩家),撞墙顺延
       e.aiT -= dt;
@@ -259,7 +261,13 @@
       }
       var m = tankCanMove(e, e.dir);
       if (m) { e.x = m.x; e.y = m.y; }
-      if (e.fireCd <= 0 && Math.random() < 0.02) fire(e);
+      // 开火:35% 概率,瞄准目标(65% 玩家 / 35% 基地)
+      if (e.fireCd <= 0 && Math.random() < 0.35) {
+        var tgt = (player.alive && Math.random() < 0.65) ? player : baseTgt;
+        var ddx = tgt.x - e.x, ddy = tgt.y - e.y;
+        e.dir = Math.abs(ddx) > Math.abs(ddy) ? (ddx > 0 ? 1 : 3) : (ddy > 0 ? 2 : 0);
+        fire(e);
+      }
     }
   }
 
