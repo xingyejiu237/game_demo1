@@ -17,7 +17,9 @@
       id: 'bomber', title: '爆破小子', subtitle: '炸弹迷宫 · 连锁引爆',
       url: 'games/bomber/index.html', status: 'play', icon: 'bomber'
     },
-    { id: 'soon1', title: '敬请期待', subtitle: '新卡带制作中…', status: 'soon' }
+    { id: 'soon1', title: '敬请期待', subtitle: '新卡带制作中…', status: 'soon' },
+    { id: 'soon2', title: '敬请期待', subtitle: '新卡带制作中…', status: 'soon' },
+    { id: 'soon3', title: '敬请期待', subtitle: '新卡带制作中…', status: 'soon' }
   ];
 
   // ---------- 像素图标(纯代码绘制,原创) ----------
