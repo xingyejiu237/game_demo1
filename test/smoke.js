@@ -35,11 +35,22 @@ global.addEventListener = function () {};
 global.requestAnimationFrame = function () {};
 if (!global.AudioContext) global.AudioContext = undefined;
 
+// localStorage 内存替身(在 require main.js 之前定义,main.js 加载时会读存档)
+var _store = {};
+global.localStorage = {
+  getItem: function (k) { return Object.prototype.hasOwnProperty.call(_store, k) ? _store[k] : null; },
+  setItem: function (k, v) { _store[k] = String(v); },
+  removeItem: function (k) { delete _store[k]; }
+};
+
 require('../games/mario/js/sprites.js');
 require('../js/audio.js');
 require('../js/input.js');
 require('../games/mario/js/level.js');
 require('../games/mario/js/levels/w1-1.js');
+require('../games/mario/js/levels/w1-2.js');
+require('../games/mario/js/levels/w1-3.js');
+require('../games/mario/js/levels/w1-4.js');
 require('../games/mario/js/entities.js');
 require('../games/mario/js/main.js');
 
@@ -55,25 +66,22 @@ function check(name, cond, extra) {
   else { console.error('  FAIL', name, extra || ''); failures.push(name); }
 }
 
-// 重置到全新关卡(清空敌人,避免相互干扰)
+// 重置到全新关卡(清空敌人,避免相互干扰);单元测试固定用第 1 关坐标
 function resetGame() {
-  Game.startGame();
+  Game.startAt(0);
   Game._enemies().length = 0;
   return Game._player();
 }
 
-// ============ A) 遍历测试 ============
-console.log('[A] 全关遍历(无敌星)');
+// ============ A) 各关卡遍历测试 ============
+console.log('[A] 各关卡全关遍历(无敌星)');
 Game._boot();
 act.anyKey = true;
 Game._step(1 / 60);
-var p = Game._player();
-p.starPower = 999999;   // 兜底防意外伤害;清空敌人,专注验证布局可通行
-Game._enemies().length = 0;
-var maxX = 0, cleared = false, frames = 0;
 
 function level() { return Game.level; }
 function decideJump() {
+  var p = Game._player();
   var lv = level();
   var tx = Math.floor((p.x + p.w + 6) / 16);
   var fr = lv.rowAt(p.y + p.h + 1);
@@ -84,29 +92,45 @@ function decideJump() {
   return (obs || gap) && p.onGround;
 }
 
-for (var f = 0; f < 30000; f++) {
-  act.dir = 1;
-  act.run = true;
-  act.jump = true;         // 长按:跳得更高,足以跨 4 格坑
-  act.jumpTap = false;
-  if (decideJump()) act.jumpTap = true;
-  Game._step(1 / 60);
-  frames++;
-  if (Game._state() === 'PLAY') maxX = Math.max(maxX, p.x);
-  if (Game._state() === 'CLEAR') { cleared = true; break; }
-  if (Game._state() === 'DEAD') { cleared = false; break; }
+function traverse(i) {
+  Game.startAt(i);
+  var p = Game._player();
+  p.starPower = 999999;   // 清空敌人+无敌,专注验证布局可通行
+  Game._enemies().length = 0;
+  var maxX = 0, cleared = false, frames = 0;
+  for (var f = 0; f < 30000; f++) {
+    act.dir = 1;
+    act.run = true;
+    act.jump = true;       // 长按:跳得更高,足以跨 4 格坑
+    act.jumpTap = false;
+    if (decideJump()) act.jumpTap = true;
+    Game._step(1 / 60);
+    frames++;
+    if (Game._state() === 'PLAY') maxX = Math.max(maxX, p.x);
+    if (Game._state() === 'CLEAR') { cleared = true; break; }
+    if (Game._state() === 'DEAD') break;
+  }
+  return { cleared: cleared, maxX: maxX, levelW: level().w * 16, frames: frames, score: p.score, time: p.time };
 }
-var levelW = LEVEL_1_1.width * 16;
-check('到达旗杆区域(maxX=' + (maxX | 0) + '/' + levelW + ')', maxX >= levelW * 0.95);
-check('进入 CLEAR 状态', cleared);
-if (cleared) {
-  check('过关时分数>0', p.score > 0);
-  check('时间奖励生效(time=' + p.time + ')', p.time < 400);
+
+var results = [];
+var LEVEL_COUNT = Game.levelCount();
+for (var li = 0; li < LEVEL_COUNT; li++) {
+  results[li] = traverse(li);
+  var r = results[li];
+  check('关卡 ' + (li + 1) + ' 到达旗杆(maxX=' + (r.maxX | 0) + '/' + r.levelW + ')', r.maxX >= r.levelW * 0.95);
+  check('关卡 ' + (li + 1) + ' 进入 CLEAR', r.cleared);
+  console.log('  关卡' + (li + 1) + ': maxX=' + (r.maxX | 0) + ' 帧数=' + r.frames + ' 分数=' + r.score);
 }
-console.log('  maxX=' + (maxX | 0) + ' 帧数=' + frames + ' 分数=' + p.score + ' 金币=' + p.coins);
+var r0 = results[0];
+if (r0.cleared) {
+  check('过关时分数>0', r0.score > 0);
+  check('时间奖励生效(time=' + r0.time + ')', r0.time < 400);
+}
 
 // ============ B) 单元测试 ============
 console.log('[B] 交互单元测试');
+var p;
 
 // B1 踩板栗仔
 p = resetGame();
@@ -192,6 +216,40 @@ p = resetGame();
 act.dir = 0; act.run = false; act.jump = false; act.jumpTap = false;
 for (var m3 = 0; m3 < 60; m3++) Game._step(1 / 60);
 check('落地高度=地面顶(bottom=' + (p.y + p.h) + ')', Math.abs(p.y + p.h - Game.level.groundTopY()) < 1);
+
+// ============ C) 存档系统 ============
+console.log('[C] 存档系统(localStorage)');
+
+// C1 最高分随得分更新,且不随低分下降
+p = resetGame();
+Game._save().highScore = 0;
+p.score = 0;
+var gC1 = new Entities.Goomba(10, 11);
+Game._enemies().push(gC1);
+p.x = 10 * 16 - 4; p.y = 11 * 16 - 40; p.vy = 2; p._prevBottom = p.y + p.h;
+act.dir = 0; act.run = false; act.jump = false; act.jumpTap = false;
+for (var c1 = 0; c1 < 60; c1++) Game._step(1 / 60);
+check('踩敌后最高分同步(hi=' + Game._save().highScore + ')', Game._save().highScore >= 100);
+Game._save().highScore = 99999;
+p.score = 20;
+Game._step(1 / 60);
+check('最高分不随低分下降(hi=' + Game._save().highScore + ')', Game._save().highScore === 99999);
+
+// C2 过关解锁下一关并推进
+Game.startAt(0);
+p = Game._player();
+p.starPower = 999999;
+Game._enemies().length = 0;
+p.x = Game.level.flagX * 16; p.y = 8 * 16 + 32; p.vy = 0; p.onGround = true;
+for (var c2 = 0; c2 < 1200 && Game._state() !== 'CLEAR'; c2++) {
+  act.dir = 0; act.run = false; act.jump = false; act.jumpTap = false;
+  Game._step(1 / 60);
+}
+check('进入 CLEAR', Game._state() === 'CLEAR');
+for (var c3 = 0; c3 < 220; c3++) Game._step(1 / 60);   // 等 3s
+act.anyKey = true; Game._step(1 / 60);
+check('过关后解锁 1-2(unlocked=' + Game._save().unlocked + ')', Game._save().unlocked === 1);
+check('推进到下一关(index=' + Game.levelIndex() + ')', Game.levelIndex() === 1);
 
 if (failures.length) {
   console.error('FAILURES:', failures.join('; '));

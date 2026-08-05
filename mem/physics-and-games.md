@@ -30,3 +30,21 @@
 
 - 视野检测:`lineOfSight`(同行/列 + 中间无砖遮挡),攻击距离限制在炸弹范围才有意义。
 - 威胁检测:`cellInDanger`(炸弹剩余帧数 < 35 且火焰可到达才触发逃跑,避免过度反应)。
+
+## 马里奥:关卡系统(2026-08-05 新增,4 关)
+
+- 数据格式:每关一个 `js/levels/wN-x.js`,定义 `globalThis.LEVEL_N_X` = { width, height:13, flagX, castleX, rows(ASCII 网格), special(问号/隐藏/金币块), enemies }。瓦片字符:`G`地面 `B`砖 `?`问号 `H`硬块/台阶 `T``P`管道顶/身 `C`城堡标记 `F``f`旗杆标记。
+- main.js 用 `LEVELS = [LEVEL_1_1..LEVEL_1_4].filter(Boolean)` 收集(缺哪个少哪个,鲁棒),`levelIndex` 推进;HUD/标题用 `worldStr()` = '1-N' 动态显示。
+- 过关流程:CLEAR 3s+按键 → 下一关(保留分数/金币/生命),最后一关回 TITLE 复位 levelIndex=0;OVER 回 TITLE 也复位。
+- **台阶必须实心列**(每列从顶填到地面,如 1-1):自动上台阶判定 `isSolid(ax,fr)&&isSolid(ax,fr-1)&&!isSolid(ax,fr-2)` 需要相邻 2 个实心 + 上方空,单格悬浮 H 台阶会卡死玩家/AI。
+- 关卡可通行验证:test/smoke.js [A] 对每关做"无敌星+清敌"自动遍历必须进 CLEAR;AI 长按跳跃弧线很长,障碍间距要留足(经典节奏,坑≤3 格、障碍间隔≥10 格),且高管道后别紧跟坑(长跳会带进坑)。
+- **出生点安全**:玩家出生在第 6 格,任何敌人 x 必须 ≥ 8,否则出生即死(1-3 曾把板栗仔放 tile6 与玩家重叠,玩家"一出生就挂")。check-level.js 有对应校验。
+
+## 马里奥:存档系统(2026-08-05 新增)
+
+- localStorage 存 `mushroomHeroSave` = JSON `{ highScore, unlocked }`(同源 iframe 正常,无沙箱;无 localStorage 环境自动跳过,不崩)。
+- 最高分:addScore 里超过历史才写;unlocked:过关推进(levelIndex++ 后)更新。
+- TITLE:黄色 HI 最高分(textC 染色)+ WORLD 1-N(继续点)+ 无存档 PRESS TO START / 有存档 PRESS TO CONTINUE + "按住 B 键开始 = 新游戏"。
+- 开始逻辑:TITLE 任意键 → `levelIndex = input.run ? 0 : save.unlocked`(B/加速键按住 = 从头,否则继续到最远解锁关)。
+- 测试:smoke.js [C] 用内存 localStorage mock 验证最高分同步/不下降/过关解锁。
+- 测试钩子:`Game.startAt(i)` / `Game.levelIndex()` / `Game.levelCount()`;check-level.js 与 smoke.js 会 require 全部关卡,新增关卡只需建文件 + index.html 加 script。

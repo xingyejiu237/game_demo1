@@ -83,178 +83,289 @@
     }
     return cache[name];
   }
-
   /* ============================================================
      小马里奥 16x16(3 帧 + 跳 + 急转)
      ============================================================ */
+
   var s_stand = [
-    '................',
-    '....RRRRRRRR...',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRHHHHHHHR..',
-    '...RHSSSSSSHR..',
-    '...RBSKSSSSHHR.',  // 眼睛/脸颊
-    '...RHSSSSSSHR..',
-    '...RHHSSSSHHR..',
-    '...RRHSSSSHRR..',
-    '...RRRRRRRRR...',
-    '...RBBBBBBBR...',
-    '...BBBBBBBBB...',
-    '...BBBBBBBBB...',
-    '..VVVVVVVVVV...'
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '.JJJJJJJJJJJJJJ.',
+    '.VVVVVVVVVVVVVV.'
   ];
   define('small_stand', s_stand, 'mario');
 
   var s_walk1 = [
-    '................',
-    '....RRRRRRRR...',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRHHHHHHHR..',
-    '...RHSSSSSSHR..',
-    '...RBSKSSSSH...',
-    '...RHSSSSSSH...',
-    '...RHHSSSSHR...',
-    '...RRHSSSSHRR..',
-    '...RRRRRRRRR...',
-    '...RBBBBBBBR...',
-    '...BBBBBBBBB...',
-    '..VRBBBBBVRR...',
-    '..VVV....VVV...'
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '.JJJJBBBBBBBB...',
+    '.VVVVBBBBBBBB...'
   ];
   define('small_walk1', s_walk1, 'mario');
 
   var s_walk2 = [
-    '................',
-    '....RRRRRRRR...',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRHHHHHHHR..',
-    '...RHSSSSSSHR..',
-    '...RBSKSSSSH...',
-    '...RHSSSSSSH...',
-    '...RHHSSSSHR...',
-    '...RRHSSSSHRR..',
-    '...RRRRRRRRR...',
-    '...RBBBBBBBB...',
-    '...BBBBBBBBB...',
-    '..RV.BBBBBBV...',
-    '...VVV...VVV...'
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '....BBBBBBBBJJJJ',
+    '....BBBBBBBBVVVV'
   ];
   define('small_walk2', s_walk2, 'mario');
 
   var s_jump = [
-    '................',
-    '....RRRRRRRR...',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRHHHHHHHR..',
-    '...RHSSSSSSHR..',
-    '...RBSKSSSSH...',
-    '...RHSSSSSSH...',
-    '...RHHSSSSHR...',
-    '...RRHSSSSHRR..',
-    '...RRRRRRRRR...',
-    '...RBBBBBBBR...',
-    '..BBBBBBBBB....',
-    '..BBBBBBBBB....',
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '..RBBBBBBBBBBR..',
+    '.JJBBBBBBBBBBJJ.',
     '................'
   ];
   define('small_jump', s_jump, 'mario');
 
   var s_skid = [
-    '................',
-    '....RRRRRRRR...',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRRRRRRRRR..',
-    '...RRHHHHHHHR..',
-    '...RHSSSSSSHR..',
-    '...RBSKSSSSHR..',
-    '..RHSSSSSSHR...',
-    '..RHHSSSSHR....',
-    '..RRHSSSHR.....',
-    '..RRRRRRR......',
-    '..BBBBBBBBV....',
-    '..BBBBBBBBBB...',
-    '..V.BBBBBBBB...',
-    '................'
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '..JJJJ....JJJJ..',
+    '..VVVV....VVVV..'
   ];
   define('small_skid', s_skid, 'mario');
 
-  /* ============================================================
-     大马里奥 16x32
-     ============================================================ */
-  var b_stand = [
-    '................',
-    '.....RRRRRRR...',
-    '....RRRRRRRRR..',
-    '....RRRRRRRRR..',
-    '....RRRRRRRRR..',
-    '....RRHHHHHHR..',
-    '....RHSSSSSHR..',
-    '....RRSSSSSSR..',
-    '...RRHSSSSSSR..',
-    '...RRHSSSSSSR..',
-    '...RRHSKSSSS...',
-    '...R.RHSSSSS...',
-    '...R.RHSSSSS...',
-    '...R.RHSSSSHR..',
-    '...RRHHSSHRRR..',
-    '....RRRRRRRR...',
-    '...RRKRRRRRR...',
-    '..S.RRRRRR.SR..',
-    '..S.RBBBBBR.R..',
-    '..S.RBBBBBRS...',
-    '..SR.BBBBB .RS.',
-    '..RRBBBBBB.br.',
-    '..RRBBBBBBRBRL',
-    '.RRRBBBBBBBRL.',
-    '.RRRBBBBBBBR..',
-    '.RRBBBBBBBBR..',
-    '.RRBBBBBBBBR..',
-    '..RBBBBBBBB...',
-    '..VV.VVVVV.V..',
-    '..VV.VVVVV.V..',
+  var big_stand = [
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '.WBBBBBBBBBBBBW.',
+    '..RBBWBBBBWBBR..',
+    '...RBBBBBBBBR...',
+    '...RBBBBBBBBR...',
+    '..RBBBBBBBBBBR..',
+    '..RBBBBBBBBBBR..',
+    '..BBBBBBBBBBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '.JJJJ......JJJJ.',
+    '.JJJJ......JJJJ.',
+    '.VVVV......VVVV.',
     '................'
   ];
-  define('big_stand', b_stand, 'mario');
+  define('big_stand', big_stand, 'mario');
 
-  // 大马里奥行走帧:基于 stand 修改脚部
-  var b_walk1 = b_stand.slice();
-  b_walk1[26] = '..RBBBBBBBBV..';
-  b_walk1[27] = '..BBBBBBBBV...';
-  b_walk1[28] = '.VV.VVVVV.V...';
-  b_walk1[29] = '................';
-  define('big_walk1', b_walk1, 'mario');
+  var big_walk1 = [
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '.WBBBBBBBBBBBBW.',
+    '..RBBWBBBBWBBR..',
+    '...RBBBBBBBBR...',
+    '...RBBBBBBBBR...',
+    '..RBBBBBBBBBBR..',
+    '..RBBBBBBBBBBR..',
+    '..BBBBBBBBBBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....JJJJ..',
+    '..BBBB....JJJJ..',
+    '..JJJJ..........',
+    '..JJJJ..........',
+    '..VVVV..........',
+    '................'
+  ];
+  define('big_walk1', big_walk1, 'mario');
 
-  var b_walk2 = b_stand.slice();
-  b_walk2[26] = '...RBBBBBBB...';
-  b_walk2[27] = '..V.BBBBBBB...';
-  b_walk2[28] = '..V.VVVVV....';
-  b_walk2[29] = '................';
-  define('big_walk2', b_walk2, 'mario');
+  var big_walk2 = [
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '.WBBBBBBBBBBBBW.',
+    '..RBBWBBBBWBBR..',
+    '...RBBBBBBBBR...',
+    '...RBBBBBBBBR...',
+    '..RBBBBBBBBBBR..',
+    '..RBBBBBBBBBBR..',
+    '..BBBBBBBBBBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..JJJJ....BBBB..',
+    '..JJJJ....BBBB..',
+    '..........JJJJ..',
+    '..........JJJJ..',
+    '..........VVVV..',
+    '................'
+  ];
+  define('big_walk2', big_walk2, 'mario');
 
-  var b_jump = b_stand.slice();
-  b_jump[24] = '..RRBBBBBBR....';
-  b_jump[25] = '..RRBBBBBR.....';
-  b_jump[26] = '..RBBBBBBR.....';
-  b_jump[27] = '..RBBBBBBR.....';
-  b_jump[28] = '.V..VVVVV.V....';
-  b_jump[29] = '.V..VVVVV.V....';
-  b_jump[30] = '................';
-  define('big_jump', b_jump, 'mario');
+  var big_jump = [
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '.WBBBBBBBBBBBBW.',
+    '..RBBWBBBBWBBR..',
+    '...RBBBBBBBBR...',
+    '...RBBBBBBBBR...',
+    '..RBBBBBBBBBBR..',
+    '..RBBBBBBBBBBR..',
+    '..BBBBBBBBBBBB..',
+    '...BBBB..BBBB...',
+    '...BBBB..BBBB...',
+    '..JJJJ....JJJJ..',
+    '..VVVV....VVVV..',
+    '................',
+    '................',
+    '................',
+    '................',
+    '................'
+  ];
+  define('big_jump', big_jump, 'mario');
 
-  var b_skid = b_stand.slice();
-  b_skid[27] = '..BBBBBBBBBB...';
-  b_skid[28] = '..VVVVVVVVV....';
-  b_skid[29] = '.V..VVVV........';
-  define('big_skid', b_skid, 'mario');
+  var big_skid = [
+    '.......RR.......',
+    '.....RRRRRR.....',
+    '....RRRRRRRR....',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '.RRHHHHHHHHHHRR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSKKSSKKSSHR.',
+    '.RHSSSSSSSSSHR.',
+    '.RHSSHHHHHSSHR.',
+    '...RRRRRRRRRR...',
+    '..RRRRRRRRRRRR..',
+    '..RRRRRRRRRRRR..',
+    '..RRBBBBBBBBRR..',
+    '.WBBBBBBBBBBBBW.',
+    '.WBBBBBBBBBBBBW.',
+    '..RBBWBBBBWBBR..',
+    '...RBBBBBBBBR...',
+    '...RBBBBBBBBR...',
+    '..RBBBBBBBBBBR..',
+    '..RBBBBBBBBBBR..',
+    '..BBBBBBBBBBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '..BBBB....BBBB..',
+    '.JJJJ......JJJJ.',
+    '.JJJJ......JJJJ.',
+    '.VVVV......VVVV.',
+    '................'
+  ];
+  define('big_skid', big_skid, 'mario');
 
   // 火焰马里奥:用 marioFire 调色板重建
   var FIRE_NAMES = ['small_stand','small_walk1','small_walk2','small_jump','small_skid',
@@ -664,6 +775,7 @@
     'L': ["11000000","11000000","11000000","11000000","11000000","11000000","11111111","00000000"],
     'M': ["11000011","11100111","11111111","11011011","11011011","11000011","11000011","00000000"],
     'O': ["01111110","11000011","11000011","11000011","11000011","11000011","01111110","00000000"],
+    'P': ["11111100","11000110","11000110","11111100","11000000","11000000","11000000","00000000"],
     'R': ["11111110","11000011","11000011","11111110","11001100","11000110","11000011","00000000"],
     'U': ["11000011","11000011","11000011","11000011","11000011","11000011","01111110","00000000"],
     'S': ["01111110","11000000","11100000","00111100","00000010","00000011","11111100","00000000"],

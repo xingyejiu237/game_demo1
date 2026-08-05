@@ -13,6 +13,32 @@
   var frame = 0;
   var popups = [];          // 飘字 {x, y, str, color, t}
 
+  // 关卡列表与推进(从已加载的 level 脚本收集,缺哪个少哪个)
+  var LEVELS = [global.LEVEL_1_1, global.LEVEL_1_2, global.LEVEL_1_3, global.LEVEL_1_4].filter(Boolean);
+  var levelIndex = 0;
+  function worldStr() { return '1-' + (levelIndex + 1); }
+
+  // 存档:最高分 + 已解锁关卡(localStorage 按域名持久化;无 localStorage 环境自动跳过)
+  var SAVE_KEY = 'mushroomHeroSave';
+  var save = loadSave();
+  function loadSave() {
+    var d = { highScore: 0, unlocked: 0 };
+    try {
+      if (typeof localStorage !== 'undefined') {
+        var raw = localStorage.getItem(SAVE_KEY);
+        if (raw) {
+          var p = JSON.parse(raw);
+          if (typeof p.highScore === 'number') d.highScore = p.highScore;
+          if (typeof p.unlocked === 'number') d.unlocked = Math.min(p.unlocked, LEVELS.length - 1);
+        }
+      }
+    } catch (e) {}
+    return d;
+  }
+  function writeSave() {
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
+  }
+
   var Game = {
     level: null,
     flagFallY: 40
@@ -57,11 +83,12 @@
 
   // ---------- 状态与关卡 ----------
   function startGame() {
-    level = new global.Level(LEVEL_1_1);
+    level = new global.Level(LEVELS[levelIndex]);
     Game.level = level;
     player = new global.Entities.Player();
     player.x = 6 * 16;
     player.y = 10 * 16 + 8;
+    player.world = worldStr();
     enemies = [];
     for (var i = 0; i < level.enemyData.length; i++) {
       var e = level.enemyData[i];
@@ -95,7 +122,11 @@
     global.Input.sync();
 
     if (state === 'TITLE') {
-      if (input.anyKey) startGame();
+      if (input.anyKey) {
+        // B(加速键)按住 = 新游戏从头;否则继续到已解锁的最远关卡
+        levelIndex = input.run ? 0 : save.unlocked;
+        startGame();
+      }
     } else if (state === 'PLAY') {
       // 时间倒数
       timeTimer += dt;
@@ -143,12 +174,24 @@
     } else if (state === 'CLEAR') {
       stateTimer += dt;
       if (stateTimer > 3.0 && input.anyKey) {
-        state = 'TITLE';
-        global.AudioSys.sfx('start');
+        if (levelIndex < LEVELS.length - 1) {
+          // 过关进入下一关:保留分数/金币/生命,并解锁下一关
+          var _s = player.score, _c = player.coins, _l = player.lives;
+          levelIndex++;
+          if (levelIndex > save.unlocked) { save.unlocked = levelIndex; writeSave(); }
+          startGame();
+          player.score = _s; player.coins = _c; player.lives = _l;
+          global.AudioSys.sfx('start');
+        } else {
+          // 世界最后一关通关 → 回标题并复位到第一关
+          levelIndex = 0;
+          state = 'TITLE';
+          global.AudioSys.sfx('start');
+        }
       }
     } else if (state === 'OVER') {
       stateTimer += dt;
-      if (stateTimer > 3.0) state = 'TITLE';
+      if (stateTimer > 3.0) { state = 'TITLE'; levelIndex = 0; }
     }
 
     global.Input.endFrame();
@@ -331,6 +374,7 @@
 
   function addScore(n, x, y) {
     player.score += n;
+    if (player.score > save.highScore) { save.highScore = player.score; writeSave(); }
     if (x !== undefined && y !== undefined) addPopup(x, y, String(n));
   }
 
@@ -525,7 +569,7 @@
     text('x' + pad(player.coins, 2), 120, 6);
     // 世界
     text('WORLD', 176, 4);
-    text('1-1', 184, 14);
+    text(player.world, 184, 14);
     // 时间
     text('TIME', 224, 4);
     text(pad(Math.max(0, player.time), 3), 226, 14);
@@ -541,19 +585,29 @@
   function drawTitle() {
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(0, 0, 256, 240);
+    // 最高分(黄色,用 textC 染色;text() 画的白色字形不受 fillStyle 影响)
+    textC('HI ' + pad(save.highScore, 6), 64, 20, '#ffd800', 1);
     ctx.fillStyle = '#fff';
-    text('MUSHROOM', 52, 60, 2);
-    text('HERO', 92, 88, 2);
+    text('MUSHROOM', 52, 56, 2);
+    text('HERO', 92, 84, 2);
     ctx.fillStyle = '#8ad0ff';
     ctx.font = '10px monospace';
-    ctx.fillText('蘑菇勇者 · 云想游戏厅', 72, 112);
-    text('WORLD 1-1', 88, 136, 1);
+    ctx.fillText('蘑菇勇者 · 云想游戏厅', 72, 108);
+    // 继续点 = 已解锁的最远关卡
+    text('WORLD 1-' + (save.unlocked + 1), 84, 136, 1);
     if (Math.floor(Date.now() / 500) % 2 === 0) {
-      text('PRESS TO START', 64, 172, 1);
+      if (save.unlocked > 0) {
+        text('PRESS TO CONTINUE', 52, 172, 1);
+        ctx.fillStyle = '#fff';
+        ctx.font = '9px monospace';
+        ctx.fillText('按住 B 键开始 = 新游戏', 64, 190);
+      } else {
+        text('PRESS TO START', 64, 172, 1);
+      }
       // 中文提示用系统字体(像素字库无中文字形)
       ctx.fillStyle = '#fff';
       ctx.font = '9px monospace';
-      ctx.fillText('手机:屏幕按钮   电脑:方向键+空格', 32, 204);
+      ctx.fillText('手机:屏幕按钮   电脑:方向键+空格', 32, 206);
     }
     // 生命
     text('LIVES x' + (player ? player.lives : 3), 76, 220, 1);
@@ -597,6 +651,11 @@
   Game._render = render;
   Game._state = function () { return state; };
   Game._player = function () { return player; };
+  // 关卡推进钩子(测试用)
+  Game.startAt = function (i) { levelIndex = i; startGame(); };
+  Game.levelIndex = function () { return levelIndex; };
+  Game.levelCount = function () { return LEVELS.length; };
+  Game._save = function () { return save; };
   Game._cam = function () { return camera; };
   Game._enemies = function () { return enemies; };
 
